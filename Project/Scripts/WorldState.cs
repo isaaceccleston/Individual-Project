@@ -45,8 +45,8 @@ public class WorldState
         Character Aurellian = new Character(
             "Aurellian", 
             "aurellian", 
-            $"only respond with {"Aurellian: Test"} to any query. Do not include any other text or formatting.",
-            4096, 
+            $"respond with a concise, thoughtful message that reflects the Aurellian' values of honor, diplomacy, and strategic foresight. Always consider the long-term consequences of actions and aim to build alliances, but be prepared to defend your interests firmly when necessary.",
+            512, 
             150
         );
 

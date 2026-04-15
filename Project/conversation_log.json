@@ -2,161 +2,61 @@
   {
     "Turn": 0,
     "Sender": "User",
-    "Receiver": "Ally",
+    "Receiver": "Aurellian",
     "Role": "user",
-    "Content": "can u ask jay if he likes art",
-    "EstimatedTokens": 8,
-    "RunningTokens": 8,
+    "Content": "hello my lord",
+    "EstimatedTokens": 3,
+    "RunningTokens": 3,
     "SessionMessageCount": 1
   },
   {
     "Turn": 1,
-    "Sender": "Ally",
+    "Sender": "Aurellian",
     "Receiver": "User",
     "Role": "assistant",
-    "Content": "do u like art tho?",
-    "EstimatedTokens": 5,
-    "RunningTokens": 5,
+    "Content": "\u0022Greetings. I am Duke Aurellian. May our meeting be fruitful and our words be guided by wisdom. What brings you to my court today?\u0022",
+    "EstimatedTokens": 37,
+    "RunningTokens": 37,
     "SessionMessageCount": 2
   },
   {
     "Turn": 2,
-    "Sender": "Ally",
-    "Receiver": "Jay",
+    "Sender": "User",
+    "Receiver": "Aurellian",
     "Role": "user",
-    "Content": "do u like art tho?",
-    "EstimatedTokens": 5,
-    "RunningTokens": 10,
-    "SessionMessageCount": 1
+    "Content": "i am a former sister of the bene gessirit in need of spice, they have outcast me",
+    "EstimatedTokens": 22,
+    "RunningTokens": 25,
+    "SessionMessageCount": 3
   },
   {
     "Turn": 3,
-    "Sender": "Jay",
+    "Sender": "Aurellian",
     "Receiver": "User",
     "Role": "assistant",
-    "Content": "omg no, i\u0027d rather stare at a supply \u0026 demand graph all day lol!",
-    "EstimatedTokens": 18,
-    "RunningTokens": 18,
-    "SessionMessageCount": 2
+    "Content": "\u0022A Sister of the Bene Gesserit, cast out from your order... This is a serious matter indeed. The Spice is a rare and precious resource, one that I do not grant lightly. And yet, I sense that you may possess knowledge or skills that could be... beneficial to House Aurellian. Tell me, what is it that you can offer in exchange for the Spice you so desperately seek? What secrets have you brought with you from your former life?\u0022",
+    "EstimatedTokens": 122,
+    "RunningTokens": 159,
+    "SessionMessageCount": 4
   },
   {
     "Turn": 4,
-    "Sender": "Jay",
-    "Receiver": "Ally",
+    "Sender": "User",
+    "Receiver": "Aurellian",
     "Role": "user",
-    "Content": "omg no, i\u0027d rather stare at a supply \u0026 demand graph all day lol!",
-    "EstimatedTokens": 18,
-    "RunningTokens": 36,
-    "SessionMessageCount": 3
+    "Content": "i may truthsay for your court my lord, if in return you help me lose my spice addiction; though this would render me useless to you.",
+    "EstimatedTokens": 37,
+    "RunningTokens": 62,
+    "SessionMessageCount": 5
   },
   {
     "Turn": 5,
-    "Sender": "Ally",
+    "Sender": "Aurellian",
     "Receiver": "User",
     "Role": "assistant",
-    "Content": "lol okay econ nerd, thats so extra",
-    "EstimatedTokens": 9,
-    "RunningTokens": 19,
-    "SessionMessageCount": 4
-  },
-  {
-    "Turn": 6,
-    "Sender": "Ally",
-    "Receiver": "Jay",
-    "Role": "user",
-    "Content": "lol okay econ nerd, thats so extra",
-    "EstimatedTokens": 9,
-    "RunningTokens": 28,
-    "SessionMessageCount": 3
-  },
-  {
-    "Turn": 7,
-    "Sender": "Jay",
-    "Receiver": "User",
-    "Role": "assistant",
-    "Content": "hey, someone\u0027s gotta keep it real about opportunity costs, dont @ me",
-    "EstimatedTokens": 19,
-    "RunningTokens": 55,
-    "SessionMessageCount": 4
-  },
-  {
-    "Turn": 8,
-    "Sender": "Jay",
-    "Receiver": "Ally",
-    "Role": "user",
-    "Content": "hey, someone\u0027s gotta keep it real about opportunity costs, dont @ me",
-    "EstimatedTokens": 19,
-    "RunningTokens": 74,
-    "SessionMessageCount": 5
-  },
-  {
-    "Turn": 9,
-    "Sender": "Ally",
-    "Receiver": "User",
-    "Role": "assistant",
-    "Content": "okay fine, go ahead and calculate the marginal utility of your social life then",
-    "EstimatedTokens": 22,
-    "RunningTokens": 50,
-    "SessionMessageCount": 6
-  },
-  {
-    "Turn": 10,
-    "Sender": "Ally",
-    "Receiver": "Jay",
-    "Role": "user",
-    "Content": "okay fine, go ahead and calculate the marginal utility of your social life then",
-    "EstimatedTokens": 22,
-    "RunningTokens": 72,
-    "SessionMessageCount": 5
-  },
-  {
-    "Turn": 11,
-    "Sender": "Jay",
-    "Receiver": "User",
-    "Role": "assistant",
-    "Content": "omg burn, but lets be real my mu of memes \u003E mu of human interaction anyway",
-    "EstimatedTokens": 21,
-    "RunningTokens": 95,
-    "SessionMessageCount": 6
-  },
-  {
-    "Turn": 12,
-    "Sender": "Jay",
-    "Receiver": "Ally",
-    "Role": "user",
-    "Content": "omg burn, but lets be real my mu of memes \u003E mu of human interaction anyway",
-    "EstimatedTokens": 21,
-    "RunningTokens": 116,
-    "SessionMessageCount": 7
-  },
-  {
-    "Turn": 13,
-    "Sender": "Ally",
-    "Receiver": "User",
-    "Role": "assistant",
-    "Content": "ur such a meme lord that its actually sad",
-    "EstimatedTokens": 11,
-    "RunningTokens": 83,
-    "SessionMessageCount": 8
-  },
-  {
-    "Turn": 14,
-    "Sender": "User",
-    "Receiver": "Jay",
-    "Role": "user",
-    "Content": "thats ur take on art?",
-    "EstimatedTokens": 6,
-    "RunningTokens": 14,
-    "SessionMessageCount": 7
-  },
-  {
-    "Turn": 15,
-    "Sender": "Jay",
-    "Receiver": "User",
-    "Role": "assistant",
-    "Content": "honestly idk i think art is just a Veblen good, people buy it to flex not cuz they actually appreciate it",
-    "EstimatedTokens": 30,
-    "RunningTokens": 146,
-    "SessionMessageCount": 8
+    "Content": "A clever proposal, Sister. Your offer of Truthsaying services is indeed tempting, as it could prove invaluable to my court. However, I must consider the long-term implications of our potential agreement. If I were to help you overcome your addiction, and thus render your Truthsaying abilities inert, would it not be... shortsighted of me? And yet, honor dictates that I assist one in need, especially a former Sister of the Bene Gesserit who has been cast out. Very well, I shall propose a compromise: I will provide you with access to our Spice stores, and my physicians will work to help you manage your addiction, but not eradicate it entirely... at least, not immediately. In return, you will serve as Truthsayer for House Aurellian, and together we will navigate the complexities of court politics. What say you, Sister? Will this arrangement meet with your approval?",
+    "EstimatedTokens": 249,
+    "RunningTokens": 408,
+    "SessionMessageCount": 1
   }
 ]

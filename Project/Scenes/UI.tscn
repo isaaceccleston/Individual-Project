@@ -131,6 +131,14 @@ offset_right = 206.0
 offset_bottom = 950.0
 text = "Export"
 
+[node name="SummariseButton" type="Button" parent="UIHBox/UserPanel"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 816.0
+offset_right = 206.0
+offset_bottom = 876.0
+text = "Summarise"
+
 [node name="ModelsPanel" type="Panel" parent="UIHBox"]
 layout_mode = 2
 size_flags_horizontal = 3

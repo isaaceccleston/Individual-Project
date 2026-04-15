@@ -14,14 +14,21 @@ public partial class Main : Node2D
     {
         // Initialize the Ollama interface and chat manager
         ollamaInterface = GetNode<OllamaInterface>("OllamaInterface");
+        ollamaInterface.worldState = worldState;
         ui = GetNode<UI>("UI");
 
         ui.MessageSubmitted += OnUserMessage;
         ui.RecieverChanged += ChangeModelSession;
         ui.SenderChanged += ChangeSender;
         ui.ExportLogRequested += ExportLog;
+        ui.SummariseRequested += RequestSummary;
 
         ollamaInterface.ModelReply += OnModelReply;
+    }
+
+    public void RequestSummary()
+    {
+        ollamaInterface.RequestSummary();
     }
 
     public void ExportLog()

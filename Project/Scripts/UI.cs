@@ -9,6 +9,7 @@ public partial class UI : Control
     RichTextLabel modelLabel2;
     Button sendMessageButton;
     Button exportButton;
+    Button summariseButton;
     OptionButton senderDropdown;
     OptionButton recieverDropdown;
     [Signal]
@@ -19,6 +20,8 @@ public partial class UI : Control
     public delegate void RecieverChangedEventHandler(string reciever);
     [Signal]
     public delegate void ExportLogRequestedEventHandler();
+    [Signal]
+    public delegate void SummariseRequestedEventHandler();
     OllamaInterface ollama;
 
     public override void _Ready()
@@ -31,13 +34,20 @@ public partial class UI : Control
         senderDropdown = GetNode<OptionButton>("UIHBox/UserPanel//SenderDropdown");
         recieverDropdown = GetNode<OptionButton>("UIHBox/UserPanel//RecieverDropdown");
         ollama = GetNode<OllamaInterface>("/root/Main/OllamaInterface");
+        summariseButton = GetNode<Button>("UIHBox/UserPanel/SummariseButton");
 
         sendMessageButton.Pressed += OnSendMessagePressed;
         recieverDropdown.ItemSelected += OnRecieverChanged;
         senderDropdown.ItemSelected += OnSenderChanged;
         exportButton.Pressed += OnExportPressed;
+        summariseButton.Pressed += OnSummarisePressed;
 
         ollama.ModelReply += OnModelReply;
+    }
+
+    public void OnSummarisePressed()
+    {
+        EmitSignal(SignalName.SummariseRequested);
     }
 
     public void OnSendMessagePressed()

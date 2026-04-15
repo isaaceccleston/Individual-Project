@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using Godot;
 
 public class ChatSession
 {
@@ -9,10 +10,13 @@ public class ChatSession
     public string name;
     private List<ChatMessage> messages = new();
     private int conversationBudget;
+    public string messagesSummary = "";
+    public List<ChatMessage> trimmedMessages = new();
 
     // LLama rough averages
     private float charsPerToken = 3.5f;
-    private int replyBuffer = 512;
+    // private int replyBuffer = 512;
+    private int replyBuffer = 150;
     public int maxTokens;
 
     public ChatSession(string modelID, string name, string systemPrompt, int modelContextWindow, int maxTokens)
@@ -45,10 +49,10 @@ public class ChatSession
         //skips system prompt
         int total = messages.Skip(1).Sum(m => EstimateTokens(m.content));
 
-        while (total > conversationBudget && messages.Count > 1)
+        while (total > conversationBudget && messages.Count > 2)
         {
-            Debug.Write("Trimming messages to fit within conversation budget...");
-            //drop oldest message until fits within budget
+            GD.Print($"Trimming messages. Total tokens: {total}, Budget: {conversationBudget}"); // Debug log
+            trimmedMessages.Add(messages[1]);
             total -= EstimateTokens(messages[1].content);
             messages.RemoveAt(1);
         }
@@ -56,6 +60,6 @@ public class ChatSession
 
     public List<ChatMessage> GetMessages()
     {
-        return messages;
+        return new List<ChatMessage>(messages);
     }
 }
