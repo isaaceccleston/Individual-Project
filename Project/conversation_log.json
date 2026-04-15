@@ -1,0 +1,162 @@
+[
+  {
+    "Turn": 0,
+    "Sender": "User",
+    "Receiver": "Ally",
+    "Role": "user",
+    "Content": "can u ask jay if he likes art",
+    "EstimatedTokens": 8,
+    "RunningTokens": 8,
+    "SessionMessageCount": 1
+  },
+  {
+    "Turn": 1,
+    "Sender": "Ally",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "do u like art tho?",
+    "EstimatedTokens": 5,
+    "RunningTokens": 5,
+    "SessionMessageCount": 2
+  },
+  {
+    "Turn": 2,
+    "Sender": "Ally",
+    "Receiver": "Jay",
+    "Role": "user",
+    "Content": "do u like art tho?",
+    "EstimatedTokens": 5,
+    "RunningTokens": 10,
+    "SessionMessageCount": 1
+  },
+  {
+    "Turn": 3,
+    "Sender": "Jay",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "omg no, i\u0027d rather stare at a supply \u0026 demand graph all day lol!",
+    "EstimatedTokens": 18,
+    "RunningTokens": 18,
+    "SessionMessageCount": 2
+  },
+  {
+    "Turn": 4,
+    "Sender": "Jay",
+    "Receiver": "Ally",
+    "Role": "user",
+    "Content": "omg no, i\u0027d rather stare at a supply \u0026 demand graph all day lol!",
+    "EstimatedTokens": 18,
+    "RunningTokens": 36,
+    "SessionMessageCount": 3
+  },
+  {
+    "Turn": 5,
+    "Sender": "Ally",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "lol okay econ nerd, thats so extra",
+    "EstimatedTokens": 9,
+    "RunningTokens": 19,
+    "SessionMessageCount": 4
+  },
+  {
+    "Turn": 6,
+    "Sender": "Ally",
+    "Receiver": "Jay",
+    "Role": "user",
+    "Content": "lol okay econ nerd, thats so extra",
+    "EstimatedTokens": 9,
+    "RunningTokens": 28,
+    "SessionMessageCount": 3
+  },
+  {
+    "Turn": 7,
+    "Sender": "Jay",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "hey, someone\u0027s gotta keep it real about opportunity costs, dont @ me",
+    "EstimatedTokens": 19,
+    "RunningTokens": 55,
+    "SessionMessageCount": 4
+  },
+  {
+    "Turn": 8,
+    "Sender": "Jay",
+    "Receiver": "Ally",
+    "Role": "user",
+    "Content": "hey, someone\u0027s gotta keep it real about opportunity costs, dont @ me",
+    "EstimatedTokens": 19,
+    "RunningTokens": 74,
+    "SessionMessageCount": 5
+  },
+  {
+    "Turn": 9,
+    "Sender": "Ally",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "okay fine, go ahead and calculate the marginal utility of your social life then",
+    "EstimatedTokens": 22,
+    "RunningTokens": 50,
+    "SessionMessageCount": 6
+  },
+  {
+    "Turn": 10,
+    "Sender": "Ally",
+    "Receiver": "Jay",
+    "Role": "user",
+    "Content": "okay fine, go ahead and calculate the marginal utility of your social life then",
+    "EstimatedTokens": 22,
+    "RunningTokens": 72,
+    "SessionMessageCount": 5
+  },
+  {
+    "Turn": 11,
+    "Sender": "Jay",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "omg burn, but lets be real my mu of memes \u003E mu of human interaction anyway",
+    "EstimatedTokens": 21,
+    "RunningTokens": 95,
+    "SessionMessageCount": 6
+  },
+  {
+    "Turn": 12,
+    "Sender": "Jay",
+    "Receiver": "Ally",
+    "Role": "user",
+    "Content": "omg burn, but lets be real my mu of memes \u003E mu of human interaction anyway",
+    "EstimatedTokens": 21,
+    "RunningTokens": 116,
+    "SessionMessageCount": 7
+  },
+  {
+    "Turn": 13,
+    "Sender": "Ally",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "ur such a meme lord that its actually sad",
+    "EstimatedTokens": 11,
+    "RunningTokens": 83,
+    "SessionMessageCount": 8
+  },
+  {
+    "Turn": 14,
+    "Sender": "User",
+    "Receiver": "Jay",
+    "Role": "user",
+    "Content": "thats ur take on art?",
+    "EstimatedTokens": 6,
+    "RunningTokens": 14,
+    "SessionMessageCount": 7
+  },
+  {
+    "Turn": 15,
+    "Sender": "Jay",
+    "Receiver": "User",
+    "Role": "assistant",
+    "Content": "honestly idk i think art is just a Veblen good, people buy it to flex not cuz they actually appreciate it",
+    "EstimatedTokens": 30,
+    "RunningTokens": 146,
+    "SessionMessageCount": 8
+  }
+]

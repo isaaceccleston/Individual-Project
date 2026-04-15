@@ -1,0 +1,213 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyifn05m0qf0b"]
+
+[ext_resource type="Script" uid="uid://3m7v27ody65t" path="res://Scripts/UI.cs" id="1_w371h"]
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_w371h")
+
+[node name="UIHBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.95
+anchor_bottom = 0.95
+
+[node name="UserPanel" type="Panel" parent="UIHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ColorRect" type="ColorRect" parent="UIHBox/UserPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.67451, 0.643137, 0.580392, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="UIHBox/UserPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 43.1
+offset_top = 48.6
+offset_right = 43.1
+offset_bottom = 48.6
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.861, 0.9)
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="UserTextedit" type="TextEdit" parent="UIHBox/UserPanel/ColorRect2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 42.8571
+offset_top = 40.4444
+offset_right = 42.8571
+offset_bottom = 40.4445
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.9, 0.9)
+size_flags_horizontal = 3
+placeholder_text = "Enter a message...
+"
+context_menu_enabled = false
+emoji_menu_enabled = false
+shortcut_keys_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+empty_selection_clipboard_enabled = false
+wrap_mode = 1
+
+[node name="SendButton" type="Button" parent="UIHBox/UserPanel"]
+layout_mode = 0
+offset_left = 660.0
+offset_top = 890.0
+offset_right = 840.0
+offset_bottom = 950.0
+text = "Send Message"
+
+[node name="RecieverDropdown" type="OptionButton" parent="UIHBox/UserPanel"]
+layout_mode = 0
+offset_left = 529.0
+offset_top = 890.0
+offset_right = 649.0
+offset_bottom = 950.0
+item_count = 2
+popup/item_0/text = "Aurellian"
+popup/item_0/id = 0
+popup/item_1/text = "Brutan"
+popup/item_1/id = 1
+
+[node name="ToLabel" type="Label" parent="UIHBox/UserPanel/RecieverDropdown"]
+layout_mode = 0
+offset_left = -28.0
+offset_right = 12.0
+offset_bottom = 23.0
+text = "To:"
+
+[node name="SenderDropdown" type="OptionButton" parent="UIHBox/UserPanel"]
+layout_mode = 0
+offset_left = 372.0
+offset_top = 890.0
+offset_right = 492.0
+offset_bottom = 950.0
+selected = 0
+item_count = 3
+popup/item_0/text = "User"
+popup/item_0/id = 2
+popup/item_1/text = "Aurellian"
+popup/item_1/id = 0
+popup/item_2/text = "Brutan"
+popup/item_2/id = 1
+
+[node name="FromLabel" type="Label" parent="UIHBox/UserPanel/SenderDropdown"]
+layout_mode = 0
+offset_left = -52.0
+offset_right = -7.0
+offset_bottom = 23.0
+text = "From:"
+
+[node name="ExportButton" type="Button" parent="UIHBox/UserPanel"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 890.0
+offset_right = 206.0
+offset_bottom = 950.0
+text = "Export"
+
+[node name="ModelsPanel" type="Panel" parent="UIHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ColorRect" type="ColorRect" parent="UIHBox/ModelsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.67451, 0.643137, 0.580392, 1)
+
+[node name="ModelsVBox" type="VBoxContainer" parent="UIHBox/ModelsPanel"]
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 48.0
+offset_right = 40.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.9, 0.9)
+alignment = 1
+
+[node name="ModelPanel1" type="Panel" parent="UIHBox/ModelsPanel/ModelsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ColorRect" type="ColorRect" parent="UIHBox/ModelsPanel/ModelsVBox/ModelPanel1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="ModelLabel1" type="RichTextLabel" parent="UIHBox/ModelsPanel/ModelsVBox/ModelPanel1"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.95
+anchor_bottom = 0.95
+offset_left = -0.0998802
+offset_top = -0.0499992
+offset_right = -0.0998535
+offset_bottom = -0.0499878
+text = "Aurellian"
+
+[node name="ModelPanel2" type="Panel" parent="UIHBox/ModelsPanel/ModelsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ColorRect" type="ColorRect" parent="UIHBox/ModelsPanel/ModelsVBox/ModelPanel2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="ModelLabel2" type="RichTextLabel" parent="UIHBox/ModelsPanel/ModelsVBox/ModelPanel2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.95
+anchor_bottom = 0.95
+offset_left = 9.53674e-05
+offset_top = 1.14441e-05
+offset_right = 0.00012207
+grow_horizontal = 2
+grow_vertical = 2
+text = "Brutan"
