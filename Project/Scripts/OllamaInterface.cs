@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public partial class OllamaInterface : Node2D
 {
-    private string API_KEY = "sk-244be4b5b3e34bffb2b5220114334042";
+    private string API_KEY;
     private string targetURL = "https://h.langbein.org:11003/api/chat/completions";
     //
     public ChatManager chatManager = new();
@@ -30,6 +30,8 @@ public partial class OllamaInterface : Node2D
 
     public override void _Ready()
     {
+        API_KEY = GetAPIKey("/Users/isaaceccleston/Desktop/api-key.txt");
+
         httpRequest = new HttpRequest();
         AddChild(httpRequest);
         httpRequest.RequestCompleted += OnReply;
@@ -37,6 +39,20 @@ public partial class OllamaInterface : Node2D
         summaryHttpRequest = new HttpRequest();
         AddChild(summaryHttpRequest);
         summaryHttpRequest.RequestCompleted += OnSummaryReply;
+    }
+
+    string GetAPIKey(string filepath)
+    {
+        try
+        {
+            GD.Print("Reading API key from: " + filepath); // Debug log
+            return System.IO.File.ReadAllText(filepath).Trim();
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("Failed to read API key: " + e.Message);
+            return null;
+        }
     }
 
     private void Send(string sender, string message)
