@@ -19,7 +19,7 @@ public partial class OllamaInterface : Node2D
     //
     private HttpRequest httpRequest;
     private HttpRequest summaryHttpRequest;
-    private int summaryThreshold = 2;
+    private int summaryThreshold = 6;
     private bool waitingForResponse = false;
     private string pendingSender;
     private string pendingMessage;
@@ -145,9 +145,12 @@ public partial class OllamaInterface : Node2D
 
     private void OnReply(long result, long responseCode, string[] headers, byte[] body)
     {
+        
         waitingForResponse = false;
 
         string responseText = Encoding.UTF8.GetString(body);
+
+        GD.Print($"response: {responseText}"); // Debug log
 
         if (responseCode != 200)
         {
@@ -164,6 +167,14 @@ public partial class OllamaInterface : Node2D
                 .GetProperty("content")
                 .GetString();
             
+            GD.Print($"Raw response received: {rawResponse}"); // Debug log
+
+            if (string.IsNullOrWhiteSpace(rawResponse))
+            {
+                GD.PrintErr("Empty response received, ignoring.");
+                return;
+            }
+
             var (target, cleanResponse) = ParseRouting(rawResponse);
             currentSession.AddMessage("assistant", cleanResponse);
 
@@ -183,6 +194,7 @@ public partial class OllamaInterface : Node2D
         }
         
         GD.Print("Received response for " + currentSession.name); // Debug log
+        
     }
 
     private void OnSummaryReply(long result, long responseCode, string[] headers, byte[] body)

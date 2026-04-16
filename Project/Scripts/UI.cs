@@ -4,18 +4,24 @@ using System.Diagnostics;
 
 public partial class UI : Control
 {
+    //
     TextEdit userTextEdit;
-    RichTextLabel modelLabel1;
-    RichTextLabel modelLabel2;
+    Label titleA;
+    Label titleB;
+    Label titleC;
+    Label titleAll;
+    Label textA;
+    Label textB;
+    Label textC;
+    Label textAll;
+    //
     Button sendMessageButton;
     Button exportButton;
     Button summariseButton;
-    OptionButton senderDropdown;
     OptionButton recieverDropdown;
+    //
     [Signal]
     public delegate void MessageSubmittedEventHandler(string message);
-    [Signal]
-    public delegate void SenderChangedEventHandler(string sender);
     [Signal]
     public delegate void RecieverChangedEventHandler(string reciever);
     [Signal]
@@ -26,23 +32,48 @@ public partial class UI : Control
 
     public override void _Ready()
     {
-        userTextEdit = GetNode<TextEdit>("UIHBox/UserPanel/ColorRect2/UserTextedit");
-        modelLabel1 = GetNode<RichTextLabel>("UIHBox/ModelsPanel/ModelsVBox/ModelPanel1/ModelLabel1");
-        modelLabel2 = GetNode<RichTextLabel>("UIHBox/ModelsPanel/ModelsVBox/ModelPanel2/ModelLabel2");
-        sendMessageButton = GetNode<Button>("UIHBox/UserPanel/SendButton");
-        exportButton = GetNode<Button>("UIHBox/UserPanel/ExportButton");
-        senderDropdown = GetNode<OptionButton>("UIHBox/UserPanel//SenderDropdown");
-        recieverDropdown = GetNode<OptionButton>("UIHBox/UserPanel//RecieverDropdown");
+        //
+        userTextEdit = GetNode<TextEdit>("UIHBox/UIVBox/ColorRect/VBoxContainer/UserHBox/UserInputField");
+        titleA = GetNode<Label>("UIHBox/UIVBox2/RectA/VBoxContainer/TitleA");
+        titleB = GetNode<Label>("UIHBox/UIVBox2/RectB/VBoxContainer/TitleB");
+        titleC = GetNode<Label>("UIHBox/UIVBox2/RectC/VBoxContainer/TitleC");
+        titleAll = GetNode<Label>("UIHBox/UIVBox/ColorRect/VBoxContainer/TitleAll");
+        textA = GetNode<Label>("UIHBox/UIVBox2/RectA/VBoxContainer/TextA");
+        textB = GetNode<Label>("UIHBox/UIVBox2/RectB/VBoxContainer/TextB");
+        textC = GetNode<Label>("UIHBox/UIVBox2/RectC/VBoxContainer/TextC");
+        textAll = GetNode<Label>("UIHBox/UIVBox/ColorRect/VBoxContainer/TextAll");
+        
+        //
+        sendMessageButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/UserHBox/SendButton");
+        exportButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/ButtonsHBox/ExportButton");
+        recieverDropdown = GetNode<OptionButton>("UIHBox/UIVBox/ColorRect/VBoxContainer/UserHBox/RecieverDropdown");
+        summariseButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/ButtonsHBox/SummariseButton");
+        
+        //
         ollama = GetNode<OllamaInterface>("/root/Main/OllamaInterface");
-        summariseButton = GetNode<Button>("UIHBox/UserPanel/SummariseButton");
-
+        
+        //
         sendMessageButton.Pressed += OnSendMessagePressed;
         recieverDropdown.ItemSelected += OnRecieverChanged;
-        senderDropdown.ItemSelected += OnSenderChanged;
         exportButton.Pressed += OnExportPressed;
         summariseButton.Pressed += OnSummarisePressed;
-
         ollama.ModelReply += OnModelReply;
+    }
+
+    public void SetCharacterLabels(string[] characters)
+    {
+        //dropdown
+        recieverDropdown.Clear();
+        foreach (string option in characters)
+        {
+            recieverDropdown.AddItem(option);
+        }
+
+        //title labels
+        titleA.Text = $"{characters[0]}:";
+        titleB.Text = $"{characters[1]}:";
+        titleC.Text = $"{characters[2]}:";
+        titleAll.Text = "All:";
     }
 
     public void OnSummarisePressed()
@@ -55,18 +86,11 @@ public partial class UI : Control
         string userMessage = userTextEdit.Text.Trim();    
         if (string.IsNullOrEmpty(userMessage)){return;}
 
-        //ui bits
-        userTextEdit.PlaceholderText = userTextEdit.PlaceholderText + '\n' + userMessage;
+        //ui
         userTextEdit.Text = string.Empty;
 
         //emit signal stuff to send message to ollama interface
         EmitSignal(SignalName.MessageSubmitted, userMessage);
-    }
-
-    public void OnSenderChanged(long index)
-    {
-        string sender = senderDropdown.GetItemText((int)index);
-        EmitSignal(SignalName.SenderChanged, sender);
     }
 
     public void OnRecieverChanged(long index)
@@ -85,9 +109,18 @@ public partial class UI : Control
     {
         switch(sender)
         {
-            case "Aurellian": modelLabel1.Text = $"{sender}: {message}"; break;
-            case "Brutan": modelLabel2.Text = $"{sender}: {message}"; break;
-            default: GD.PrintErr("Received message for unknown character: ", sender); break;
+            case "Aurellian": 
+                textA.Text = $"{message}"; 
+                break;
+            case "Sisterhood": 
+                textB.Text = $"{message}"; 
+                break;
+            case "Emperor": 
+                textC.Text = $"{message}"; 
+                break;
+            default: 
+                GD.PrintErr("Received message for unknown character: ", sender); 
+                break;
         }
     }
 }

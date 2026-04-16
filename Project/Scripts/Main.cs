@@ -1,29 +1,80 @@
-using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Godot;
 
 public partial class Main : Node2D
 {
+    //
     OllamaInterface ollamaInterface;
     UI ui;
+    StartUI startUI;
+    WorldState worldState = new WorldState();
+
+    //
+    string playerFaction = "";
     string sender = "User";
     private int agentHopCount;
     private int maxAgentHops = 6;
-    WorldState worldState = new WorldState();
+
     public override void _Ready()
     {
-        // Initialize the Ollama interface and chat manager
-        ollamaInterface = GetNode<OllamaInterface>("OllamaInterface");
-        ollamaInterface.worldState = worldState;
+        //
+        startUI = GetNode<StartUI>("StartUI");
         ui = GetNode<UI>("UI");
+        ui.Visible = false;
 
+        startUI.StartGameSignal += OnStartGame;
+
+        //
         ui.MessageSubmitted += OnUserMessage;
         ui.RecieverChanged += ChangeModelSession;
-        ui.SenderChanged += ChangeSender;
         ui.ExportLogRequested += ExportLog;
         ui.SummariseRequested += RequestSummary;
 
+        // Initialize the Ollama interface and chat manager
+        ollamaInterface = GetNode<OllamaInterface>("OllamaInterface");
+        ollamaInterface.worldState = worldState;
+
         ollamaInterface.ModelReply += OnModelReply;
+    }
+
+    private void OnStartGame(bool mode, int faction)
+    {
+        GD.Print($"Starting game with mode: {(mode ? "LLM" : "Baseline")}, faction: {faction}"); // Debug log
+        
+        startUI.Visible = false;
+        ui.Visible = true;
+        
+        playerFaction = faction switch
+        {
+            0 => "Aurellian",
+            1 => "Brutan",
+            2 => "Sisterhood",
+            3 => "Emperor",
+            _ => throw new ArgumentException("Invalid faction index")
+        };
+
+        // ui stuff
+        List<string> recieverOptions = worldState.characters.Keys.ToList();
+        recieverOptions.Remove(playerFaction);
+        ui.SetCharacterLabels(recieverOptions.ToArray());
+
+        //
+        string firstReceiver = recieverOptions[0];
+        ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[firstReceiver]);
+        sender = playerFaction;
+
+        //
+
+        // if (!mode)
+        // {
+        //     return;
+        // }
+        // else
+        // {
+        //     return;
+        // }
     }
 
     public void RequestSummary()
@@ -71,22 +122,13 @@ public partial class Main : Node2D
 
     public void ChangeModelSession(string characterName)
     {
-        switch(characterName)
+        if (worldState.characters.ContainsKey(characterName))
         {
-            case "Aurellian":
-                ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters["Aurellian"]);
-                break;
-            case "Brutan":
-                ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters["Brutan"]);
-                break;
-            default:
-                GD.PrintErr($"Unknown character: {characterName}");
-                break;
+            ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[characterName]);
         }
-    }
-
-    public void ChangeSender(string sender)
-    {
-        this.sender = sender;
+        else
+        {
+            GD.PrintErr($"Unknown character: {characterName}");
+        }
     }
 }

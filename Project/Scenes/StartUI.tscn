@@ -1,0 +1,233 @@
+[gd_scene load_steps=2 format=3 uid="uid://byurowaqas8tv"]
+
+[ext_resource type="Script" uid="uid://chyy6bcnupg0k" path="res://Scripts/StartUI.cs" id="1_h1thb"]
+
+[node name="StartupUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h1thb")
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 544.0
+offset_top = 48.0
+offset_right = -416.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.9, 0.9)
+theme_override_constants/separation = 25
+
+[node name="TitlePanel" type="Panel" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.75
+
+[node name="TitleLabel" type="Label" parent="MainVBox/TitlePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 50
+text = "Title"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ModeHBox" type="HBoxContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="ColorRect" type="ColorRect" parent="MainVBox/ModeHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="LLMButton" type="Button" parent="MainVBox/ModeHBox/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "LLM generated
+characters"
+autowrap_mode = 3
+
+[node name="ColorRect2" type="ColorRect" parent="MainVBox/ModeHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="BaselineButton" type="Button" parent="MainVBox/ModeHBox/ColorRect2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Baseline
+characters"
+autowrap_mode = 3
+
+[node name="QuitPanel" type="Panel" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="QuitButton" type="Button" parent="MainVBox/QuitPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Quit"
+autowrap_mode = 3
+
+[node name="FactionVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 544.0
+offset_top = 48.0
+offset_right = -416.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.9, 0.9)
+theme_override_constants/separation = 25
+
+[node name="TitlePanel" type="Panel" parent="FactionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.75
+
+[node name="TitleLabel" type="Label" parent="FactionVBox/TitlePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 50
+text = "Choose your faction"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AurellianBox" type="HBoxContainer" parent="FactionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="ColorRect" type="ColorRect" parent="FactionVBox/AurellianBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="AurellianButton" type="Button" parent="FactionVBox/AurellianBox/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Aurellian"
+autowrap_mode = 3
+
+[node name="BrutanBox" type="HBoxContainer" parent="FactionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="ColorRect" type="ColorRect" parent="FactionVBox/BrutanBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="BrutanButton" type="Button" parent="FactionVBox/BrutanBox/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -0.222202
+offset_bottom = -0.222198
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Brutan"
+autowrap_mode = 3
+
+[node name="SisterhoodBox" type="HBoxContainer" parent="FactionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="ColorRect" type="ColorRect" parent="FactionVBox/SisterhoodBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="SisterhoodButton" type="Button" parent="FactionVBox/SisterhoodBox/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Sisterhood"
+autowrap_mode = 3
+
+[node name="EmperorBox" type="HBoxContainer" parent="FactionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="ColorRect" type="ColorRect" parent="FactionVBox/EmperorBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.203922, 0.192157, 0.188235, 1)
+
+[node name="EmperorButton" type="Button" parent="FactionVBox/EmperorBox/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Emporer"
+autowrap_mode = 3
+
+[node name="BackPanel" type="Panel" parent="FactionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="BackButton" type="Button" parent="FactionVBox/BackPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Back
+"
+autowrap_mode = 3

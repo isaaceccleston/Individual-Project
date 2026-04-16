@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 public class WorldState
 {
@@ -63,7 +64,7 @@ public class WorldState
         Character Sisterhood = new Character(
             "Sisterhood", 
             "sisterhood", 
-            $"only respond with {"Sisterhood: Test"} to any query. Do not include any other text or formatting.",
+            $"respond with 200 characters of random lorem ipsum text. Do not include any other text or formatting.",
             4096, 
             150
         );
