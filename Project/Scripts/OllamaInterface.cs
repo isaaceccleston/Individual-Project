@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 public partial class OllamaInterface : Node2D
 {
@@ -21,9 +22,9 @@ public partial class OllamaInterface : Node2D
     private HttpRequest summaryHttpRequest;
     private int summaryThreshold = 6;
     private bool waitingForResponse = false;
-    private string pendingSender;
-    private string pendingMessage;
     private bool hasPendingMessage = false;
+    //
+    private Stopwatch requestStopwatch = new Stopwatch();
     //
     [Signal]
     public delegate void ModelReplyEventHandler(string sender, string target, string message);
@@ -55,52 +56,51 @@ public partial class OllamaInterface : Node2D
         }
     }
 
-    private void Send(string sender, string message)
+    private void Send()
     {
         waitingForResponse = true;
 
-        string fMessage = $"{sender} says: {message}";
-        currentSession.AddMessage("user", fMessage);
-
-        logger.LogMessage(
-            sender,
-            currentSession.name,
-            "user",
-            message,
-            (int)(message.Length / 3.5f),
-            currentSession.GetMessages().Count - 1);
-
         List<ChatMessage> messageList = currentSession.GetMessages();
 
-        if (!string.IsNullOrEmpty(currentSession.messagesSummary))
+        if(!string.IsNullOrEmpty(currentSession.messagesSummary))
         {
-            messageList.Insert(1, new ChatMessage("system",
-                $"[Summary of earlier conversation: {currentSession.messagesSummary}]"));
+            messageList.Insert(1, new ChatMessage("system", $"[Summary of earlier conversation: {currentSession.messagesSummary}]"));
         }
 
         string context = worldState?.GetContext(currentSession.name);
         if (!string.IsNullOrEmpty(context))
+        {
             messageList.Insert(2, new ChatMessage("system", context));
+        }
 
-        var body = new {
+        var body = new
+        {
             model = currentSession.modelID,
             messages = messageList,
             max_tokens = currentSession.maxTokens
         };
 
         string json = JsonSerializer.Serialize(body);
-        string[] headers = { "Content-Type: application/json", $"Authorization: Bearer {API_KEY}" };
+        string[] headers = 
+        {
+            "Content-Type: application/json", 
+            $"Authorization: Bearer {API_KEY}" 
+        };
 
+        requestStopwatch.Restart();
+        
         Error err = httpRequest.Request(targetURL, headers, Godot.HttpClient.Method.Post, json);
         if (err != Error.Ok)
+        {
             GD.PrintErr("HTTP Request failed: ", err);
-        
-        GD.Print($"Sent message from {sender} to {currentSession.name}"); // Debug log
+        }
+
+        GD.Print($"Prompting {currentSession.name} to respond");
     }
 
-    public void SendMessage(string sender, string message)
-    {   
-        if(waitingForResponse)
+    public void PromptCurrentAgent()
+    {
+        if (waitingForResponse)
         {
             GD.Print("Still waiting for response, wait...");
             return;
@@ -108,25 +108,25 @@ public partial class OllamaInterface : Node2D
 
         if(currentSession.trimmedMessages.Count > summaryThreshold)
         {
-            GD.Print("Summary threshold reached, summarizing conversation...");
-            pendingSender = sender;
-            pendingMessage = message;
+            GD.Print($"Summary threshold reached for {currentSession.name}, summarising...");
             hasPendingMessage = true;
             waitingForResponse = true;
             RequestSummary();
             return;
         }
 
-        Send(sender, message);
+        Send();
     }
 
     public void RequestSummary()
     {
         List<ChatMessage> summaryMessages =
         [
-            new ChatMessage("system", "You are a concise summarizer. The following messages are from a political " +
-                "dialogue simulation. Summarize them in 2-3 sentences, preserving key facts, " +
-                "positions taken, and any tension or decisions between the parties. " +
+            new ChatMessage("system",
+                "You are a concise summarizer. The following messages are from a political " +
+                "dialogue simulation involving multiple factions who speak both privately and publicly. " +
+                "Summarize them in 2-3 sentences, preserving who said what, positions taken, alliances " +
+                "or threats made, and any private information separately from public statements. " +
                 "Respond with only the summary text, no preamble."),
             .. currentSession.trimmedMessages,
             new ChatMessage("user", "Summarize the above conversation."),
@@ -145,7 +145,9 @@ public partial class OllamaInterface : Node2D
 
     private void OnReply(long result, long responseCode, string[] headers, byte[] body)
     {
-        
+        requestStopwatch.Stop();
+        long elapsedMs = requestStopwatch.ElapsedMilliseconds;
+       
         waitingForResponse = false;
 
         string responseText = Encoding.UTF8.GetString(body);
@@ -166,12 +168,11 @@ public partial class OllamaInterface : Node2D
                 .GetProperty("message")
                 .GetProperty("content")
                 .GetString();
-            
-            GD.Print($"Raw response received: {rawResponse}"); // Debug log
 
             if (string.IsNullOrWhiteSpace(rawResponse))
             {
-                GD.PrintErr("Empty response received, ignoring.");
+                GD.PrintErr($"Empty response from {currentSession.name}, skipping.");
+                EmitSignal(SignalName.ModelReply, currentSession.name, "All", "[No response]");
                 return;
             }
 
@@ -183,8 +184,8 @@ public partial class OllamaInterface : Node2D
                 target, 
                 "assistant", 
                 cleanResponse,
-                (int)(cleanResponse.Length / 3.5f), 
-                currentSession.GetMessages().Count-1);
+                (int)(cleanResponse.Length / 3.5f),
+                elapsedMs);
 
             EmitSignal(SignalName.ModelReply, currentSession.name, target, cleanResponse);
         }
@@ -229,7 +230,7 @@ public partial class OllamaInterface : Node2D
         if (hasPendingMessage)
         {
             hasPendingMessage = false;
-            Send(pendingSender, pendingMessage);
+            Send();
         }
 
         GD.Print("Summary response received for " + currentSession.name); // Debug log

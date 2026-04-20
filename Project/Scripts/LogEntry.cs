@@ -7,5 +7,5 @@ public class LogEntry
     public string Content { get; set; }
     public int EstimatedTokens { get; set; }
     public int RunningTokens { get; set; } // tokens used in the conversation up to this point
-    public int SessionMessageCount { get; set; } // how deep is the context at this point
+    public long LatencyMs { get; set; } // time taken for the model to respond in milliseconds
 }

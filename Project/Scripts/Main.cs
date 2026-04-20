@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks.Dataflow;
 using Godot;
 
 public partial class Main : Node2D
@@ -10,12 +11,11 @@ public partial class Main : Node2D
     UI ui;
     StartUI startUI;
     WorldState worldState = new WorldState();
-
     //
     string playerFaction = "";
     string sender = "User";
-    private int agentHopCount;
-    private int maxAgentHops = 6;
+    private Queue<string> agentTurnQueue = new();
+    private bool isPlayerTurn = true;
 
     public override void _Ready()
     {
@@ -28,7 +28,6 @@ public partial class Main : Node2D
 
         //
         ui.MessageSubmitted += OnUserMessage;
-        ui.RecieverChanged += ChangeModelSession;
         ui.ExportLogRequested += ExportLog;
         ui.SummariseRequested += RequestSummary;
 
@@ -59,6 +58,7 @@ public partial class Main : Node2D
         List<string> recieverOptions = worldState.characters.Keys.ToList();
         recieverOptions.Remove(playerFaction);
         ui.SetCharacterLabels(recieverOptions.ToArray());
+        ui.SetPlayerFaction(playerFaction);
 
         //
         string firstReceiver = recieverOptions[0];
@@ -89,46 +89,103 @@ public partial class Main : Node2D
 
     public void OnUserMessage(string message)
     {
-        agentHopCount = 0;
-        ollamaInterface.SendMessage(sender, message);
+        if (!isPlayerTurn)
+        {
+            GD.Print("It's not the player's turn, message ignored.");
+            return;
+        }
+
+        string target = ui.GetCurentReciever();
+        if(string.IsNullOrEmpty(target))
+        {
+            GD.PrintErr("No target selected, defaulted to ALL.");
+            target = "All";
+        }
+        
+        isPlayerTurn = false;
+
+        BroadcastMessage(playerFaction, target, message);
+
+        ollamaInterface.logger.LogMessage(
+            playerFaction, 
+            target, 
+            "user", 
+            message, 
+            (int)(message.Length / 3.5f)); // Rough token estimate
+
+        ui.OnModelReply(playerFaction, target, message);
+
+        agentTurnQueue.Clear();
+        foreach(string name in worldState.characters.Keys)
+        {
+            if(name != playerFaction)
+            {
+                agentTurnQueue.Enqueue(name);
+            }
+        }
+
+        StartNextAgentTurn();
     }
 
     private void OnModelReply(string senderName, string target, string message)
     {
+        if(target != "All" && !worldState.characters.ContainsKey(target))
+        {
+            GD.PrintErr($"Received message for unknown target '{target}', sending to ALL.");
+            target = "All";
+        }
+
         ui.OnModelReply(senderName, target, message);
 
-        bool isTargetAgent = target != "User" && worldState.characters.ContainsKey(target);
+        BroadcastMessage(senderName, target, message);
 
-        if (isTargetAgent && agentHopCount < maxAgentHops)
-        {
-            agentHopCount++;
-            GD.Print($"Agent hop {agentHopCount}: {senderName} -> {target}");
+        StartNextAgentTurn();
+    }
 
-            var timer = GetTree().CreateTimer(1.0f); // 1 second delay before next message
-            timer.Timeout += () => {
-                ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[target]);
-                ollamaInterface.SendMessage(senderName, message);
-            };
-        }
-        else
+    private void BroadcastMessage(string sender, string target, string message)
+    {
+        foreach (var kvp in worldState.characters)
         {
-            if(agentHopCount >= maxAgentHops)
+            string factionName = kvp.Key;
+        
+            if(factionName == sender)
             {
-                GD.Print("Max agent hops reached, stopping chain.");
+                continue; // Don't send the message to the sender's own model session
             }
-            agentHopCount = 0;
+            if(factionName == playerFaction)
+            {
+                continue; // Don't send the message to the player's model session
+            }
+
+            bool hears = target == "All" || target == factionName;
+            if (!hears)
+            {
+                continue;
+            }
+
+            var session = ollamaInterface.chatManager.GetOrCreateSession(kvp.Value);
+            session.ObserveMessage(sender, target, message);
         }
     }
 
-    public void ChangeModelSession(string characterName)
+    private void StartNextAgentTurn()
     {
-        if (worldState.characters.ContainsKey(characterName))
+        if (agentTurnQueue.Count == 0)
         {
-            ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[characterName]);
+            isPlayerTurn = true;
+            GD.Print("All agents have taken their turn. It's now the player's turn.");
+            return;
         }
-        else
+
+        string nextAgent = agentTurnQueue.Dequeue();
+        GD.Print($"It's now {nextAgent}'s turn to respond.");
+
+        ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[nextAgent]);
+
+        var timer = GetTree().CreateTimer(0.5f);
+        timer.Timeout += () =>
         {
-            GD.PrintErr($"Unknown character: {characterName}");
-        }
+            ollamaInterface.PromptCurrentAgent();
+        };
     }
 }

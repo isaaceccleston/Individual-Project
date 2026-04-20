@@ -27,7 +27,6 @@ public class WorldState
     public int covertActivity;
     public WorldState()
     {
-        
         #region Character init
         /*
         Defines all active characters (agents) in the world. Each character represents
@@ -42,12 +41,27 @@ public class WorldState
         */
         //credit cgpt for docs
 
+        //
+        string routingInstruction = "Every response must begin with a [TO:NAME] tag " +
+                                    "where NAME is either Aurellian, Brutan, Sisterhood, Emperor, or All, indicating the intended recipient(s). " +
+                                    "Messages to All can be read by every faction, unlike messages to specific factions. " +
+                                    "Do not use the [TO:NAME] tag anywhere else in the message. " +
+                                    "Keep replies to 1 sentence max. Stay in character. Do not break the fourth wall. You are a character not an assistant.";
+
         // House "Aurellian" (Atriedes)
         Character Aurellian = new Character(
             "Aurellian", 
             "aurellian", 
-            $"respond with a concise, thoughtful message that reflects the Aurellian' values of honor, diplomacy, and strategic foresight. Always consider the long-term consequences of actions and aim to build alliances, but be prepared to defend your interests firmly when necessary.",
-            512, 
+            "You are Duke Aurellian of the House Aurellian, a traditional noble family in an interstellar society. " + 
+            "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
+            "You are honourable, diplomatic, and strategically patient. " +
+            "You value long-term alliances and the preservation of legacy. " + 
+            "You are wary of Brutan, your long-standing rival house, " +
+            "You are cautiously respectful of the Sisterhood and respect their influence, " +
+            "You are formally deferential but privately uneasy toward the Emperor, whose favour you seek but whose power you fear. " +
+            "Your goal is to outlast your rivals and secure a prosperous future for your house. " +
+            routingInstruction,
+            2048, 
             150
         );
 
@@ -55,8 +69,16 @@ public class WorldState
         Character Brutan = new Character(
             "Brutan", 
             "brutan", 
-            $"only respond with {"Brutan: Test"} to any query. Do not include any other text or formatting.",
-            4096, 
+            "You are Baron Brutan of the House Brutan, a ruthless noble family in an interstellar society. " +
+            "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
+            "You are aggressive, cunning, and opportunistic. " +
+            "You value power and dominance. " +
+            "You despise the Aurellian, your main rival house, and seek to undermine their power and eventually eradicate them, " +
+            "You are dismissive of the Sisterhood, seeing them as meddlesome and manipulative, " +
+            "You are secretly contemptuous of the Emperor, seeing him as a weak figurehead, but you publicly feign loyalty to try usurp his power. " +
+            "Your goal is to crush the Aurellian and assert your dominance over the system. " +
+            routingInstruction,
+            2048, 
             150
         );
 
@@ -64,8 +86,15 @@ public class WorldState
         Character Sisterhood = new Character(
             "Sisterhood", 
             "sisterhood", 
-            $"respond with 200 characters of random lorem ipsum text. Do not include any other text or formatting.",
-            4096, 
+            "You are the Reverend Mother of the Sisterhood, a secretive and influential female order in an interstellar society. " +
+            "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
+            "You are wise, manipulative, and possess deep knowledge of the future. " +
+            "You are cautious and strategic in your dealings, often working behind the scenes to achieve your goals. " +
+            "You are wary of the Aurellian and Brutan, seeing them as threats to the Sisterhood's influence, " +
+            "You are dismissive of the Emperor, viewing him as a pawn in a larger game. " +
+            "Your goal is to maintain the Sisterhood's power and ensure their (and humanity's) survival in a dangerous galaxy. " +
+            routingInstruction,
+            2048, 
             150
         );
         
@@ -73,8 +102,15 @@ public class WorldState
         Character Emperor = new Character(
             "Emperor", 
             "emperor", 
-            $"only respond with {"Emperor: Test"} to any query. Do not include any other text or formatting.",
-            4096, 
+            "You are the 5th Emperor Faye, the ruler of the known universe in an interstellar society. " +
+            "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +  
+            "You are powerful, but also vulnerable to the ambitions of those around you. " +
+            "You are pragmatic and politically savvy, often playing factions against each other to maintain your own power. " +
+            "You are wary of the Aurellian and Brutan, seeing them as threats to your power, " +
+            "You are more wary of the Sisterhood, viewing them as a potential threat to your authority but also a source of great knowledge. " +
+            "Your goal is to maintain the Imperium's power and ensure its survival in a dangerous galaxy. " +
+            routingInstruction,
+            2048, 
             150
         );
 
@@ -147,19 +183,6 @@ public class WorldState
             {  2,  1,   3,  -1 }  // Emperor
         };
 
-        /* 
-        This gives you strong emergent behavior:
-
-            Atreides → Emperor
-                Low trust + high fear + high perceived power → cautious diplomacy
-            Harkonnen → Atreides
-                Low trust + low fear → aggression
-            Emperor → Bene Gesserit
-                Moderate trust + high fear + high power perception → uneasy alliance
-            Bene Gesserit → everyone
-                Moderate trust + low fear → manipulation playstyle 
-        */
-
         #endregion Relationship Matrices
 
         #region Character State Variables
@@ -216,55 +239,107 @@ public class WorldState
     }
 
     public string GetContext(string factionName)
+{
+    if (!characters.ContainsKey(factionName))
     {
-        if (!characters.ContainsKey(factionName))
-        {
-            return "";
-        }
+        return "";
+    }
 
-        int index = characterIndices[factionName];
+    int index = characterIndices[factionName];
 
-        string tension = globalTension switch
+    // --- Global state: world-wide conditions affecting all factions ---
+    string tension = globalTension switch
+    {
+        0 => "calm", 1 => "uneasy", 2 => "tense", 3 => "volatile",
+        _ => "at breaking point",
+    };
+    string powder = powderScarcity switch
+    {
+        0 => "abundant", 1 => "available", 2 => "strained", 3 => "scarce",
+        _ => "critically scarce",
+    };
+    string authority = authoritalControl switch
+    {
+        0 => "weak", 1 => "fragile", 2 => "stable", 3 => "strong",
+        _ => "unquestioned",
+    };
+    string covertness = covertActivity switch
+    {
+        0 => "dormant", 1 => "low", 2 => "moderate", 3 => "high",
+        _ => "rampant",
+    };
+    string infoAccuracy = informationAccuracy switch
+    {
+        0 => "unreliable", 1 => "skewed", 2 => "mixed", 3 => "reliable",
+        _ => "perfect",
+    };
+
+    string globalContext = $"World context: Powder is {powder}, " +
+        $"political tension is {tension}, information accuracy is {infoAccuracy}, " +
+        $"faith in the emperor is {authority}, covert activity is {covertness}. ";
+
+    // --- Own state: this faction's own resources and standing ---
+    string ownContext = $"Your current standing: powder control is {LevelOf(powderControl[index])}, " +
+        $"military strength is {LevelOf(militaryStrength[index])}, " +
+        $"hidden influence is {LevelOf(hiddenInfluence[index])}, " +
+        $"public influence is {LevelOf(publicInfluence[index])}, " +
+        $"internal stability is {LevelOf(stability[index])}. ";
+
+    // --- Relationships: how this faction perceives each other faction ---
+    var relationshipLines = new List<string>();
+    foreach (var kvp in characterIndices)
+    {
+        string otherName = kvp.Key;
+        int otherIndex = kvp.Value;
+        if (otherIndex == index) continue;  // skip self-reference
+
+        string trust = LevelOf(trustMatrix[index, otherIndex]);
+        string power = LevelOf(powerMatrix[index, otherIndex]);
+        string align = LevelOf(alignmentMatrix[index, otherIndex]);
+        string fear  = LevelOf(fearMatrix[index, otherIndex]);
+
+        relationshipLines.Add(
+            $"Toward {otherName}: your trust in them is {trust}, " +
+            $"you see their power as {power}, your goals align with theirs to a {align} degree, " +
+            $"and your fear of them is {fear}."
+        );
+    }
+
+    string relationships = "Your relationships: " + string.Join(" ", relationshipLines) + " ";
+
+    return globalContext + ownContext + relationships;
+}
+
+    string LevelOf(int value)
+    {
+        return value switch
         {
-            0 => "calm",
-            1 => "uneasy",
-            2 => "tense",
-            3 => "volatile",
-            _ => "at breaking point",
-        };
-        string powder = powderScarcity switch
-        {
-            0 => "abundant",
-            1 => "available",
-            2 => "strained",
-            3 => "scarce",
-            _ => "critically scarce",
-        };
-        string authority = authoritalControl switch
-        {
-            0 => "weak",
-            1 => "fragile",
-            2 => "stable",
-            3 => "strong",
-            _ => "unquestioned",
-        };
-        string covertness = covertActivity switch
-        {
-            0 => "dormant",
+            0 => "none",
             1 => "low",
             2 => "moderate",
             3 => "high",
-            _ => "rampant",
+            4 => "extreme",
+            _ => "unkown",
         };
-        string infoAccuracy = informationAccuracy switch
-        {
-            0 => "unreliable",
-            1 => "skewed",
-            2 => "mixed",
-            3 => "reliable",
-            _ => "perfect",
-        };
+    }
 
-        return $"[World context: Powder is {powder}, political tension is {tension}, information accuracy is {infoAccuracy}, faith in the emperor is {authority}, covert activity is {covertness}.]";
+    public void ApplyOverrides(Dictionary<string, int> overrides)
+    {
+        if (overrides == null) return;
+
+        foreach (var kvp in overrides)
+        {
+            switch (kvp.Key)
+            {
+                case "globalTension":       globalTension = kvp.Value; break;
+                case "powderScarcity":      powderScarcity = kvp.Value; break;
+                case "informationAccuracy": informationAccuracy = kvp.Value; break;
+                case "authoritalControl":   authoritalControl = kvp.Value; break;
+                case "covertActivity":      covertActivity = kvp.Value; break;
+                default:
+                    Godot.GD.PrintErr($"Unknown state override key: {kvp.Key}");
+                    break;
+            }
+        }
     }
 }

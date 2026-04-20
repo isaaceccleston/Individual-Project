@@ -1,6 +1,7 @@
 using Godot;
-using System;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 public partial class UI : Control
 {
@@ -15,6 +16,9 @@ public partial class UI : Control
     Label textC;
     Label textAll;
     //
+    private string playerFaction = "";
+    Dictionary<string, Label> agentLabels;
+    //
     Button sendMessageButton;
     Button exportButton;
     Button summariseButton;
@@ -28,7 +32,6 @@ public partial class UI : Control
     public delegate void ExportLogRequestedEventHandler();
     [Signal]
     public delegate void SummariseRequestedEventHandler();
-    OllamaInterface ollama;
 
     public override void _Ready()
     {
@@ -50,20 +53,22 @@ public partial class UI : Control
         summariseButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/ButtonsHBox/SummariseButton");
         
         //
-        ollama = GetNode<OllamaInterface>("/root/Main/OllamaInterface");
-        
-        //
         sendMessageButton.Pressed += OnSendMessagePressed;
         recieverDropdown.ItemSelected += OnRecieverChanged;
         exportButton.Pressed += OnExportPressed;
         summariseButton.Pressed += OnSummarisePressed;
-        ollama.ModelReply += OnModelReply;
+    }
+
+    public void SetPlayerFaction(string faction)
+    {
+        playerFaction = faction;
     }
 
     public void SetCharacterLabels(string[] characters)
     {
         //dropdown
         recieverDropdown.Clear();
+        recieverDropdown.AddItem("All");
         foreach (string option in characters)
         {
             recieverDropdown.AddItem(option);
@@ -74,6 +79,14 @@ public partial class UI : Control
         titleB.Text = $"{characters[1]}:";
         titleC.Text = $"{characters[2]}:";
         titleAll.Text = "All:";
+
+        //mapping
+        agentLabels = new Dictionary<string, Label>
+        {
+            {characters[0], textA},
+            {characters[1], textB},
+            {characters[2], textC},
+        };
     }
 
     public void OnSummarisePressed()
@@ -93,6 +106,19 @@ public partial class UI : Control
         EmitSignal(SignalName.MessageSubmitted, userMessage);
     }
 
+    public string GetCurentReciever()
+    {
+        int index = recieverDropdown.Selected;
+    
+        if(index < 0)
+        {
+            return "All";
+    
+        }
+    
+        return recieverDropdown.GetItemText(index);
+    }
+
     public void OnRecieverChanged(long index)
     {
         string reciever = recieverDropdown.GetItemText((int)index);
@@ -107,20 +133,21 @@ public partial class UI : Control
 
     public void OnModelReply(string sender, string target, string message)
     {
-        switch(sender)
+        if(target == "All")
         {
-            case "Aurellian": 
-                textA.Text = $"{message}"; 
-                break;
-            case "Sisterhood": 
-                textB.Text = $"{message}"; 
-                break;
-            case "Emperor": 
-                textC.Text = $"{message}"; 
-                break;
-            default: 
-                GD.PrintErr("Received message for unknown character: ", sender); 
-                break;
+            textAll.Text += $"\n{sender}: {message}";
+            return;
+        }
+
+        string textFieldOwner = (target == playerFaction) ? sender : target;
+
+        if(agentLabels.TryGetValue(textFieldOwner, out Label text))
+        {
+            text.Text = $"\n{sender}: {message}";
+        }
+        else
+        {
+            GD.PrintErr($"No text field for {target}");
         }
     }
 }

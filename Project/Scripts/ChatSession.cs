@@ -38,6 +38,24 @@ public class ChatSession
         TrimMessages();
     }
 
+    public void ObserveMessage(string sender, string target, string message)
+    {
+        string framing;
+        
+        if(target == "All")
+            framing = $"{sender} to everyone: {message}";
+        else if(target == name)
+        {
+            framing = $"{sender} to you: {message}";
+        }
+        else
+        {
+            framing = $"{sender} to {target}: {message}";
+        }
+
+        AddMessage("user", framing);
+    }
+
     private int EstimateTokens(string message)
     {
         //estimate tokens based on character count

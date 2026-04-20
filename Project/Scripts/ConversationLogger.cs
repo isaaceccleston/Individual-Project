@@ -9,7 +9,7 @@ public class ConversationLogger
 
     private Dictionary<string, int> sessionTokens = new Dictionary<string, int>();
 
-    public void LogMessage(string sender, string receiver, string role, string content, int estimatedTokens, int sessionMessageCount)
+    public void LogMessage(string sender, string receiver, string role, string content, int estimatedTokens, long latencyMs=0)
     {
         if(!sessionTokens.ContainsKey(sender))
         {
@@ -26,7 +26,7 @@ public class ConversationLogger
             Content = content,
             EstimatedTokens = estimatedTokens,
             RunningTokens = sessionTokens[sender],
-            SessionMessageCount = sessionMessageCount
+            LatencyMs = latencyMs
         });
     }
 

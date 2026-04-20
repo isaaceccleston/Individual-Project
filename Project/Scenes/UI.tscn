@@ -64,10 +64,8 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 8.11
 theme_override_font_sizes/font_size = 30
-text = "A: Lorem Ipsum...
-B: Lorem Ipsum...
-C: Lorem Ipsum..."
 autowrap_mode = 3
+text_overrun_behavior = 1
 
 [node name="ButtonsHBox" type="HBoxContainer" parent="UIHBox/UIVBox/ColorRect/VBoxContainer"]
 layout_mode = 2
@@ -155,9 +153,10 @@ autowrap_mode = 3
 [node name="TextA" type="Label" parent="UIHBox/UIVBox2/RectA/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_font_sizes/font_size = 30
-text = "Lorem Ipsum..."
 autowrap_mode = 3
+text_overrun_behavior = 1
 
 [node name="RectB" type="ColorRect" parent="UIHBox/UIVBox2"]
 layout_mode = 2
@@ -188,9 +187,10 @@ autowrap_mode = 3
 [node name="TextB" type="Label" parent="UIHBox/UIVBox2/RectB/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_font_sizes/font_size = 30
-text = "Lorem Ipsum..."
 autowrap_mode = 3
+text_overrun_behavior = 1
 
 [node name="RectC" type="ColorRect" parent="UIHBox/UIVBox2"]
 layout_mode = 2
@@ -221,6 +221,7 @@ autowrap_mode = 3
 [node name="TextC" type="Label" parent="UIHBox/UIVBox2/RectC/VBoxContainer"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_font_sizes/font_size = 30
-text = "Lorem Ipsum..."
 autowrap_mode = 3
+text_overrun_behavior = 1
