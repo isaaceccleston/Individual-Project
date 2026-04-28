@@ -152,7 +152,11 @@ public partial class OllamaInterface : Node2D
             "system",
             failMsg,
             0,
-            elapsedMs);
+            elapsedMs,
+            null,
+            currentSession?.GetCurrentContextTokens() ?? 0,
+            currentSession?.GetContextBudget() ?? 0,
+            currentSession?.TotalMessagesTrimmed ?? 0);
 
         retryCount = 0;
         waitingForResponse = false;
@@ -200,7 +204,7 @@ public partial class OllamaInterface : Node2D
         Error err = summaryHttpRequest.Request(targetURL, headers, Godot.HttpClient.Method.Post, json);
         if (err != Error.Ok)
             GD.PrintErr("Summary request failed: ", err);
-        
+
         GD.Print("Summary request sent."); // Debug log
     }
 
@@ -240,15 +244,42 @@ public partial class OllamaInterface : Node2D
             if (string.IsNullOrWhiteSpace(rawResponse))
             {
                 GD.PrintErr($"Empty response from {currentSession.name}, skipping.");
-                logger.LogMessage(currentSession.name, "All", "system",
-                    "[Empty response from model]", 0, elapsedMs);
+                logger.LogMessage(
+                    currentSession.name, "All", "system",
+                    "[Empty response from model]", 0, elapsedMs,
+                    null,
+                    currentSession.GetCurrentContextTokens(),
+                    currentSession.GetContextBudget(),
+                    currentSession.TotalMessagesTrimmed);
                 retryCount = 0;
                 waitingForResponse = false;
                 EmitSignal(SignalName.ModelReply, currentSession.name, "All", "[No response]");
                 return;
             }
 
-            var (target, cleanResponse) = ParseRouting(rawResponse);
+            var (target, afterRouting) = ParseRouting(rawResponse);
+
+            if (target == currentSession.name)
+            {
+                GD.PrintErr($"{currentSession.name} addressed themselves; redirecting to All.");
+                target = "All";
+            }
+
+            var (deltas, cleanResponse) = ParseDeltas(afterRouting);
+
+            // Apply deltas and collect successful ones for logging with the message
+            var appliedDeltas = new List<string>();
+            foreach (var (matrix, tgtFaction, change) in deltas)
+            {
+                int before = worldState.GetMatrixValue(matrix, currentSession.name, tgtFaction);
+                bool applied = worldState.ApplyRelationshipDelta(currentSession.name, matrix, tgtFaction, change);
+                if (applied)
+                {
+                    int after = worldState.GetMatrixValue(matrix, currentSession.name, tgtFaction);
+                    appliedDeltas.Add($"{matrix}.{tgtFaction}: {before}->{after}");
+                }
+            }
+
             currentSession.AddMessage("assistant", cleanResponse);
 
             logger.LogMessage(
@@ -257,7 +288,11 @@ public partial class OllamaInterface : Node2D
                 "assistant",
                 cleanResponse,
                 (int)(cleanResponse.Length / 3.5f),
-                elapsedMs);
+                elapsedMs,
+                appliedDeltas,
+                currentSession.GetCurrentContextTokens(),
+                currentSession.GetContextBudget(),
+                currentSession.TotalMessagesTrimmed);
 
             retryCount = 0;
             waitingForResponse = false;
@@ -331,5 +366,46 @@ public partial class OllamaInterface : Node2D
         return match.Success
             ? (match.Groups[1].Value, raw[match.Length..].Trim())
             : ("User", raw.Trim());
+    }
+
+    // Parses [DELTA: matrix+Target, matrix-Target, ...] blocks from a response.
+    // Returns the list of (matrixName, targetFaction, change) tuples and the cleaned response
+    // (with the delta block stripped so it doesn't appear in the UI or the chat history).
+    private (List<(string matrix, string target, int change)> deltas, string clean) ParseDeltas(string raw)
+    {
+        var deltas = new List<(string, string, int)>();
+
+        // Match [DELTA: ...] anywhere in the message
+        var match = Regex.Match(raw, @"\[DELTA:\s*([^\]]+)\]", RegexOptions.IgnoreCase);
+        if (!match.Success)
+        {
+            return (deltas, raw);
+        }
+
+        string inner = match.Groups[1].Value;
+
+        // Split comma-separated entries. Each entry should match: matrix(+|-)Faction
+        foreach (string part in inner.Split(','))
+        {
+            var entryMatch = Regex.Match(part.Trim(), @"^(trust|power|alignment|fear)\s*([+-])\s*(\w+?)[+-]?$",
+                                 RegexOptions.IgnoreCase);
+            if (entryMatch.Success)
+            {
+                string matrix = entryMatch.Groups[1].Value.ToLower();
+                string sign   = entryMatch.Groups[2].Value;
+                string faction = entryMatch.Groups[3].Value;
+                int change = (sign == "+") ? 1 : -1;
+                deltas.Add((matrix, faction, change));
+            }
+            else
+            {
+                GD.PrintErr($"Malformed delta entry dropped: '{part.Trim()}'");
+            }
+        }
+
+        // Strip the DELTA block from the response so it doesn't leak into chat or UI
+        string clean = raw.Substring(0, match.Index).TrimEnd() + " " +
+                       raw.Substring(match.Index + match.Length).TrimStart();
+        return (deltas, clean.Trim());
     }
 }
