@@ -3,80 +3,128 @@ using System.Collections.Generic;
 
 // Deterministic, non-LLM stand-in for an agent. Used as the comparison
 // baseline when evaluating the LLM agents: same routing format, same
-// turn cadence, but responses are drawn from a small per-faction template
-// bank instead of generated. No HTTP calls, instant return.
+// turn cadence, same [DELTA: ...] state-mutation contract — but the
+// reply text and the deltas come from a fixed per-faction template
+// bank instead of being generated. No HTTP calls, instant return.
+//
+// Each template carries an optional bundle of (matrix, target, change)
+// shifts that are pushed through WorldState.ApplyRelationshipDelta when
+// the template fires, exactly like the LLM path's [DELTA: ...] block.
+// Successful applications are returned as "matrix.Target: before->after"
+// strings so Main can hand them to ConversationLogger.AppliedDeltas,
+// keeping baseline and LLM logs directly comparable.
 public static class BaselineAgent
 {
     private static readonly Random rng = new();
 
-    private static readonly Dictionary<string, string[]> templates = new()
+    // (matrix, targetFaction, change) — change is ±1; targetFaction must
+    // not equal the speaking faction (self-deltas are rejected by
+    // WorldState.ApplyRelationshipDelta anyway).
+    private sealed record DeltaSpec(string Matrix, string Target, int Change);
+
+    private sealed record Template(string Content, params DeltaSpec[] Deltas);
+
+    // Each line reflects the faction's standing personality so the deltas
+    // bias toward sensible directions (e.g. Brutan templates erode trust
+    // toward rivals, Aurellian templates strengthen alignment with allies).
+    private static readonly Dictionary<string, Template[]> templates = new()
     {
-        ["Aurellian"] = new[]
+        ["Aurellian"] = new Template[]
         {
-            "House Aurellian honours the words of the wise and seeks unity in this trying time.",
-            "We must consider the long view; rash action benefits no one.",
-            "Tradition and the rule of law remain our guiding stars.",
-            "Trust must be earned, and we extend it cautiously.",
-            "The galaxy is best served by alliance, not aggression.",
-            "We will not be drawn into the schemes of lesser houses.",
+            new("House Aurellian honours the words of the wise and seeks unity in this trying time."),
+            new("We must consider the long view; rash action benefits no one."),
+            new("Tradition and the rule of law remain our guiding stars.",
+                new DeltaSpec("alignment", "Emperor", +1)),
+            new("Trust must be earned, and we extend it cautiously.",
+                new DeltaSpec("trust", "Brutan", -1)),
+            new("The galaxy is best served by alliance, not aggression.",
+                new DeltaSpec("alignment", "Sisterhood", +1)),
+            new("We will not be drawn into the schemes of lesser houses.",
+                new DeltaSpec("trust", "Brutan", -1),
+                new DeltaSpec("fear", "Brutan", -1)),
         },
-        ["Brutan"] = new[]
+
+        ["Brutan"] = new Template[]
         {
-            "Strength is the only currency that matters in this galaxy.",
-            "Words are cheap; results decide the fate of houses.",
-            "Brutan acts when others hesitate.",
-            "Your flattery is noted, but our position is firm.",
-            "The weak fall, the strong rise. So it has always been.",
-            "We owe no explanations to those beneath us.",
+            new("Strength is the only currency that matters in this galaxy."),
+            new("Words are cheap; results decide the fate of houses."),
+            new("Brutan acts when others hesitate.",
+                new DeltaSpec("alignment", "Aurellian", -1)),
+            new("Your flattery is noted, but our position is firm.",
+                new DeltaSpec("trust", "Sisterhood", -1)),
+            new("The weak fall, the strong rise. So it has always been.",
+                new DeltaSpec("fear", "Aurellian", -1)),
+            new("We owe no explanations to those beneath us.",
+                new DeltaSpec("trust", "Emperor", -1)),
         },
-        ["Sisterhood"] = new[]
+
+        ["Sisterhood"] = new Template[]
         {
-            "The threads of fate weave in patterns mortal eyes cannot follow.",
-            "We watch, we listen, and in time, we act.",
-            "Truth reveals itself to those who are patient.",
-            "Each move is part of a larger design.",
-            "The Sisterhood will not be hurried.",
-            "Some questions are best left to the silence.",
+            new("The threads of fate weave in patterns mortal eyes cannot follow."),
+            new("We watch, we listen, and in time, we act."),
+            new("Truth reveals itself to those who are patient."),
+            new("Each move is part of a larger design.",
+                new DeltaSpec("alignment", "Aurellian", +1)),
+            new("The Sisterhood will not be hurried.",
+                new DeltaSpec("trust", "Emperor", -1)),
+            new("Some questions are best left to the silence.",
+                new DeltaSpec("trust", "Brutan", -1)),
         },
-        ["Emperor"] = new[]
+
+        ["Emperor"] = new Template[]
         {
-            "The Imperium's word is final on this matter.",
-            "We have heard your concerns and shall consider them.",
-            "Loyalty to the throne remains the measure of all houses.",
-            "Order must be maintained at all costs.",
-            "The Emperor's gaze is upon you all.",
-            "Speak plainly, and remember to whom you speak.",
+            new("The Imperium's word is final on this matter."),
+            new("We have heard your concerns and shall consider them."),
+            new("Loyalty to the throne remains the measure of all houses.",
+                new DeltaSpec("trust", "Brutan", -1)),
+            new("Order must be maintained at all costs.",
+                new DeltaSpec("fear", "Sisterhood", +1)),
+            new("The Emperor's gaze is upon you all."),
+            new("Speak plainly, and remember to whom you speak.",
+                new DeltaSpec("trust", "Sisterhood", -1)),
         },
     };
 
-    // Returns a (target, content) pair following the same routing convention
-    // as the LLM agents: target is "All" for public, or a faction name for
-    // private. The reply mirrors the privacy of the most recent inbound
-    // message — if the player addressed this faction directly, reply privately.
-    public static (string target, string content) Respond(
+    // Returns the routing target, the reply content, and the list of
+    // delta-application strings (e.g. "trust.Brutan: 2->1") for the logger.
+    // The reply mirrors the privacy of the most recent inbound message —
+    // private replies if the player addressed this faction directly, otherwise
+    // a public broadcast.
+    public static (string target, string content, List<string> appliedDeltas) Respond(
         string faction,
         string lastSender,
         string lastTarget,
         WorldState worldState)
     {
-        string target;
-        if (lastTarget == faction && !string.IsNullOrEmpty(lastSender))
-        {
-            target = lastSender;
-        }
-        else
-        {
-            target = "All";
-        }
+        string target = (lastTarget == faction && !string.IsNullOrEmpty(lastSender))
+            ? lastSender
+            : "All";
 
         if (!templates.TryGetValue(faction, out var bank) || bank.Length == 0)
         {
-            return (target, "[no template]");
+            return (target, "[no template]", new List<string>());
         }
 
-        // pick deterministically-ish: vary by global tension to give a tiny
-        // amount of state-sensitivity, but stay reproducible per turn.
+        // deterministic-ish: vary by global tension to give some
+        // state-sensitivity, but reproducible per turn.
         int idx = (rng.Next(bank.Length) + (worldState?.globalTension ?? 0)) % bank.Length;
-        return (target, bank[idx]);
+        Template tpl = bank[idx];
+
+        var applied = new List<string>();
+        if (worldState != null)
+        {
+            foreach (DeltaSpec d in tpl.Deltas)
+            {
+                int before = worldState.GetMatrixValue(d.Matrix, faction, d.Target);
+                bool ok = worldState.ApplyRelationshipDelta(faction, d.Matrix, d.Target, d.Change);
+                if (ok)
+                {
+                    int after = worldState.GetMatrixValue(d.Matrix, faction, d.Target);
+                    applied.Add($"{d.Matrix}.{d.Target}: {before}->{after}");
+                }
+            }
+        }
+
+        return (target, tpl.Content, applied);
     }
 }
