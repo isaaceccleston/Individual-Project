@@ -265,10 +265,14 @@ public partial class OllamaInterface : Node2D
                 target = "All";
             }
 
-            var (deltas, cleanResponse) = ParseDeltas(afterRouting);
+            var (deltas, malformed, cleanResponse) = ParseDeltas(afterRouting);
 
-            // Apply deltas and collect successful ones for logging with the message
+            // Apply deltas and collect successes / rejections for logging with the message.
+            // Malformed entries from ParseDeltas are seeded into rejectedDeltas first; further
+            // rejections are added when ApplyRelationshipDelta returns false (self-reference,
+            // unknown matrix/faction, no-op clamp). Logged for §4.6.5 reliability metrics.
             var appliedDeltas = new List<string>();
+            var rejectedDeltas = new List<string>(malformed);
             foreach (var (matrix, tgtFaction, change) in deltas)
             {
                 int before = worldState.GetMatrixValue(matrix, currentSession.name, tgtFaction);
@@ -277,6 +281,11 @@ public partial class OllamaInterface : Node2D
                 {
                     int after = worldState.GetMatrixValue(matrix, currentSession.name, tgtFaction);
                     appliedDeltas.Add($"{matrix}.{tgtFaction}: {before}->{after}");
+                }
+                else
+                {
+                    string reason = ClassifyRejection(matrix, currentSession.name, tgtFaction, change);
+                    rejectedDeltas.Add($"{matrix}{(change >= 0 ? "+" : "")}{change}{tgtFaction}: {reason}");
                 }
             }
 
@@ -292,7 +301,8 @@ public partial class OllamaInterface : Node2D
                 appliedDeltas,
                 currentSession.GetCurrentContextTokens(),
                 currentSession.GetContextBudget(),
-                currentSession.TotalMessagesTrimmed);
+                currentSession.TotalMessagesTrimmed,
+                rejectedDeltas);
 
             retryCount = 0;
             waitingForResponse = false;
@@ -369,17 +379,21 @@ public partial class OllamaInterface : Node2D
     }
 
     // Parses [DELTA: matrix+Target, matrix-Target, ...] blocks from a response.
-    // Returns the list of (matrixName, targetFaction, change) tuples and the cleaned response
-    // (with the delta block stripped so it doesn't appear in the UI or the chat history).
-    private (List<(string matrix, string target, int change)> deltas, string clean) ParseDeltas(string raw)
+    // Returns the list of (matrixName, targetFaction, change) tuples, the list of
+    // malformed-entry strings (seed for rejectedDeltas in the log), and the cleaned
+    // response (with the delta block stripped so it doesn't appear in UI/chat history).
+    private (List<(string matrix, string target, int change)> deltas,
+             List<string> malformed,
+             string clean) ParseDeltas(string raw)
     {
         var deltas = new List<(string, string, int)>();
+        var malformed = new List<string>();
 
         // Match [DELTA: ...] anywhere in the message
         var match = Regex.Match(raw, @"\[DELTA:\s*([^\]]+)\]", RegexOptions.IgnoreCase);
         if (!match.Success)
         {
-            return (deltas, raw);
+            return (deltas, malformed, raw);
         }
 
         string inner = match.Groups[1].Value;
@@ -387,7 +401,8 @@ public partial class OllamaInterface : Node2D
         // Split comma-separated entries. Each entry should match: matrix(+|-)Faction
         foreach (string part in inner.Split(','))
         {
-            var entryMatch = Regex.Match(part.Trim(), @"^(trust|power|alignment|fear)\s*([+-])\s*(\w+?)[+-]?$",
+            string trimmed = part.Trim();
+            var entryMatch = Regex.Match(trimmed, @"^(trust|power|alignment|fear)\s*([+-])\s*(\w+?)[+-]?$",
                                  RegexOptions.IgnoreCase);
             if (entryMatch.Success)
             {
@@ -399,13 +414,38 @@ public partial class OllamaInterface : Node2D
             }
             else
             {
-                GD.PrintErr($"Malformed delta entry dropped: '{part.Trim()}'");
+                GD.PrintErr($"Malformed delta entry dropped: '{trimmed}'");
+                malformed.Add($"'{trimmed}': malformed");
             }
         }
 
         // Strip the DELTA block from the response so it doesn't leak into chat or UI
         string clean = raw.Substring(0, match.Index).TrimEnd() + " " +
                        raw.Substring(match.Index + match.Length).TrimStart();
-        return (deltas, clean.Trim());
+        return (deltas, malformed, clean.Trim());
+    }
+
+    // Cheap classifier for why ApplyRelationshipDelta returned false. Mirrors the
+    // checks inside WorldState.ApplyRelationshipDelta so the log entry records the
+    // specific failure mode (self-reference vs unknown faction vs invalid matrix
+    // vs no-op clamp at the 0/4 boundary) without needing a status enum on the API.
+    private string ClassifyRejection(string matrix, string source, string target, int change)
+    {
+        if (worldState == null) return "no-worldstate";
+        if (source == target) return "self-reference";
+        if (!worldState.characters.ContainsKey(source)) return "unknown-source";
+        if (!worldState.characters.ContainsKey(target)) return "unknown-target";
+
+        string m = matrix?.ToLower();
+        if (m != "trust" && m != "power" && m != "alignment" && m != "fear")
+            return "invalid-matrix";
+
+        if (change == 0) return "zero-change";
+
+        // Otherwise the only remaining failure is a clamp at the 0/4 boundary.
+        int current = worldState.GetMatrixValue(matrix, source, target);
+        if (change > 0 && current >= 4) return "clamped-at-max";
+        if (change < 0 && current <= 0) return "clamped-at-min";
+        return "unknown";
     }
 }

@@ -15,4 +15,5 @@ public class LogEntry
     //
     public long LatencyMs { get; set; } // time taken for the model to respond in milliseconds
     public List<string> AppliedDeltas { get; set; } = new();
+    public List<string> RejectedDeltas { get; set; } = new();
 }
