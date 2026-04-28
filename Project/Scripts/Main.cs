@@ -272,7 +272,7 @@ public partial class Main : Node2D
     // BroadcastMessage, scenario advance) is identical to the LLM path.
     private void RunBaselineAgentTurn(string agentName)
     {
-        var (target, content) = BaselineAgent.Respond(
+        var (target, content, appliedDeltas) = BaselineAgent.Respond(
             agentName, lastInboundSender, lastInboundTarget, worldState);
 
         ollamaInterface.logger.LogMessage(
@@ -281,7 +281,8 @@ public partial class Main : Node2D
             "assistant",
             content,
             (int)(content.Length / 3.5f),
-            0); // baseline has no real latency
+            0, // baseline has no real latency
+            appliedDeltas);
 
         OnModelReply(agentName, target, content);
     }
