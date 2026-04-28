@@ -16,19 +16,22 @@ public partial class Main : Node2D
     string sender = "User";
     private Queue<string> agentTurnQueue = new();
     private bool isPlayerTurn = true;
+    // eval stuff
+    private Scenario currentScenario;
+    private int scenarioTurnCount = 0;
+    private bool isAutomatedRun = false;
+    private string currentMode = "LLM";     // "LLM", "Scripted", or "Baseline"
+    private int currentRunIndex = 0;
+    private bool isBaselineMode = false;    // overridden per-scenario by F-key
     //
-    // scenario runner state
-    private Scenario activeScenario;
-    private int scenarioTurn;
-    private bool isBaselineMode;            // overridden by which F-key was pressed
-    private bool gameStarted;
-    //
-    // last inbound for baseline routing
+    // last inbound message — baseline agents need this to decide reply target
     private string lastInboundSender = "";
     private string lastInboundTarget = "All";
 
     public override void _Ready()
     {
+        //
+        SetProcessInput(true);
         //
         startUI = GetNode<StartUI>("StartUI");
         ui = GetNode<UI>("UI");
@@ -48,9 +51,43 @@ public partial class Main : Node2D
         ollamaInterface.ModelReply += OnModelReply;
     }
 
+    // F1–F5 → LLM scenarios 1–5, F6–F10 → baseline (non-LLM) scenarios 1–5.
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is not InputEventKey keyEvent || !keyEvent.Pressed) return;
+
+        int scenarioIdx = keyEvent.Keycode switch
+        {
+            Key.F1 => 0, Key.F2 => 1, Key.F3 => 2, Key.F4 => 3, Key.F5 => 4,
+            Key.F6 => 0, Key.F7 => 1, Key.F8 => 2, Key.F9 => 3, Key.F10 => 4,
+            _ => -1
+        };
+
+        if (scenarioIdx < 0) return;
+        if (scenarioIdx >= ScenarioLibrary.Scenarios.Count) return;
+        if (isAutomatedRun)
+        {
+            GD.Print("Already running a scenario.");
+            return;
+        }
+
+        // playerFaction must be set by having started the game normally first
+        if (string.IsNullOrEmpty(playerFaction))
+        {
+            GD.PrintErr("Start the game first (pick a faction), then press F1-F10.");
+            return;
+        }
+
+        bool baseline = keyEvent.Keycode >= Key.F6 && keyEvent.Keycode <= Key.F10;
+        string mode = baseline ? "Baseline" : "LLM";
+
+        StartScenario(ScenarioLibrary.Scenarios[scenarioIdx], mode, currentRunIndex + 1, baseline);
+    }
+
     private void OnStartGame(bool mode, int faction)
     {
         GD.Print($"Starting game with mode: {(mode ? "LLM" : "Baseline")}, faction: {faction}"); // Debug log
+        currentMode = mode ? "LLM" : "Scripted";
 
         startUI.Visible = false;
         ui.Visible = true;
@@ -75,83 +112,16 @@ public partial class Main : Node2D
         ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[firstReceiver]);
         sender = playerFaction;
 
-        // free-play mode chosen on the start screen; F-keys override per-run.
-        isBaselineMode = !mode;
-        gameStarted = true;
-    }
+        //
 
-    // F1–F5 → LLM scenarios 1–5, F6–F10 → baseline (non-LLM) scenarios 1–5.
-    // Game must be started first (faction selected) before scenarios can run.
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        if (!gameStarted) return;
-        if (@event is not InputEventKey key || !key.Pressed || key.Echo) return;
-
-        switch (key.Keycode)
-        {
-            case Key.F1: RunScenario(0, false); break;
-            case Key.F2: RunScenario(1, false); break;
-            case Key.F3: RunScenario(2, false); break;
-            case Key.F4: RunScenario(3, false); break;
-            case Key.F5: RunScenario(4, false); break;
-            case Key.F6: RunScenario(0, true); break;
-            case Key.F7: RunScenario(1, true); break;
-            case Key.F8: RunScenario(2, true); break;
-            case Key.F9: RunScenario(3, true); break;
-            case Key.F10: RunScenario(4, true); break;
-        }
-    }
-
-    private void RunScenario(int index, bool baseline)
-    {
-        if (index < 0 || index >= ScenarioLibrary.Scenarios.Count)
-        {
-            GD.PrintErr($"Scenario index {index} out of range.");
-            return;
-        }
-        if (activeScenario != null)
-        {
-            GD.PrintErr($"Scenario {activeScenario.Id} already running — ignoring request.");
-            return;
-        }
-        if (!isPlayerTurn)
-        {
-            GD.PrintErr("Cannot start scenario mid-turn; wait for current exchange to finish.");
-            return;
-        }
-
-        activeScenario = ScenarioLibrary.Scenarios[index];
-        scenarioTurn = 0;
-        isBaselineMode = baseline;
-
-        worldState.ApplyOverrides(activeScenario.StateOverrides);
-
-        GD.Print($"=== Running scenario '{activeScenario.Id}' ({(baseline ? "baseline" : "LLM")} mode), {activeScenario.TurnCap} turns ===");
-
-        FireNextScriptedPlayerMessage();
-    }
-
-    private void FireNextScriptedPlayerMessage()
-    {
-        if (activeScenario == null) return;
-
-        if (scenarioTurn >= activeScenario.TurnCap || scenarioTurn >= activeScenario.PlayerScript.Count)
-        {
-            string fname = $"scenario_{activeScenario.Id}_{(isBaselineMode ? "baseline" : "llm")}.json";
-            ollamaInterface.logger.Export(fname);
-            GD.Print($"=== Scenario '{activeScenario.Id}' complete — log written to {fname} ===");
-            activeScenario = null;
-            return;
-        }
-
-        var pm = activeScenario.PlayerScript[scenarioTurn];
-        scenarioTurn++;
-
-        // if the script targets the player's own faction, broadcast instead
-        // (scripts are written generically and may name any of the four)
-        string target = (pm.Target == playerFaction) ? "All" : pm.Target;
-
-        SendPlayerMessage(target, pm.Content);
+        // if (!mode)
+        // {
+        //     return;
+        // }
+        // else
+        // {
+        //     return;
+        // }
     }
 
     public void RequestSummary()
@@ -164,6 +134,7 @@ public partial class Main : Node2D
         ollamaInterface.logger.Export("conversation_log.json");
     }
 
+    // Called from UI signal
     public void OnUserMessage(string message)
     {
         if (!isPlayerTurn)
@@ -171,14 +142,14 @@ public partial class Main : Node2D
             GD.Print("It's not the player's turn, message ignored.");
             return;
         }
-        if (activeScenario != null)
+        if (isAutomatedRun)
         {
             GD.Print("Scenario is driving input — manual messages ignored.");
             return;
         }
 
         string target = ui.GetCurentReciever();
-        if(string.IsNullOrEmpty(target))
+        if (string.IsNullOrEmpty(target))
         {
             GD.PrintErr("No target selected, defaulted to ALL.");
             target = "All";
@@ -187,7 +158,7 @@ public partial class Main : Node2D
         SendPlayerMessage(target, message);
     }
 
-    // Shared by manual input and the scripted scenario player.
+    //used by both UI and scripted player.
     private void SendPlayerMessage(string target, string message)
     {
         isPlayerTurn = false;
@@ -199,7 +170,7 @@ public partial class Main : Node2D
             target,
             "user",
             message,
-            (int)(message.Length / 3.5f)); // Rough token estimate
+            (int)(message.Length / 3.5f));
 
         ui.OnModelReply(playerFaction, target, message);
 
@@ -210,9 +181,7 @@ public partial class Main : Node2D
         foreach (string name in worldState.characters.Keys)
         {
             if (name != playerFaction)
-            {
                 agentTurnQueue.Enqueue(name);
-            }
         }
 
         StartNextAgentTurn();
@@ -241,7 +210,7 @@ public partial class Main : Node2D
         foreach (var kvp in worldState.characters)
         {
             string factionName = kvp.Key;
-        
+
             if(factionName == sender)
             {
                 continue; // Don't send the message to the sender's own model session
@@ -262,6 +231,7 @@ public partial class Main : Node2D
         }
     }
 
+    //
     private void StartNextAgentTurn()
     {
         if (agentTurnQueue.Count == 0)
@@ -269,11 +239,11 @@ public partial class Main : Node2D
             isPlayerTurn = true;
             GD.Print("All agents have taken their turn. It's now the player's turn.");
 
-            // if a scenario is active, advance the scripted player after a short pause
-            if (activeScenario != null)
+            // If we're in an automated run, fire the next scripted message after a short pause
+            if (isAutomatedRun)
             {
-                var t = GetTree().CreateTimer(0.5f);
-                t.Timeout += FireNextScriptedPlayerMessage;
+                var scenarioTimer = GetTree().CreateTimer(1.0f);
+                scenarioTimer.Timeout += () => FireNextScriptedMessage();
             }
             return;
         }
@@ -289,18 +259,22 @@ public partial class Main : Node2D
         }
         else
         {
-            ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[nextAgent]);
+            ollamaInterface.currentSession =
+                ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[nextAgent]);
+
             var timer = GetTree().CreateTimer(0.5f);
             timer.Timeout += () => ollamaInterface.PromptCurrentAgent();
         }
     }
 
+    // Fire one templated baseline reply for the named agent.
+    // Logs and routes through OnModelReply so the rest of the pipeline (UI,
+    // BroadcastMessage, scenario advance) is identical to the LLM path.
     private void RunBaselineAgentTurn(string agentName)
     {
         var (target, content) = BaselineAgent.Respond(
             agentName, lastInboundSender, lastInboundTarget, worldState);
 
-        // log it the same way LLM replies are logged so logs are comparable
         ollamaInterface.logger.LogMessage(
             agentName,
             target,
@@ -310,5 +284,65 @@ public partial class Main : Node2D
             0); // baseline has no real latency
 
         OnModelReply(agentName, target, content);
+    }
+
+    //
+    public void StartScenario(Scenario scenario, string mode, int runIndex, bool baseline = false)
+    {
+        GD.Print($"STARTING SCENARIO: {scenario.Id} | mode={mode} | run={runIndex}");
+
+        currentScenario = scenario;
+        currentMode = mode;
+        currentRunIndex = runIndex;
+        scenarioTurnCount = 0;
+        isAutomatedRun = true;
+        isBaselineMode = baseline;
+
+        // Fresh sessions so no history leaks between runs
+        ollamaInterface.chatManager = new ChatManager();
+        ollamaInterface.logger = new ConversationLogger();
+
+        // Rebuild world state from scratch + apply scenario's overrides
+        worldState = new WorldState();
+        worldState.ApplyOverrides(scenario.StateOverrides);
+        ollamaInterface.worldState = worldState;
+
+        isPlayerTurn = true;
+        FireNextScriptedMessage();
+    }
+
+    // Fire the next player script message, or end the scenario if exhausted.
+    private void FireNextScriptedMessage()
+    {
+        if (scenarioTurnCount >= currentScenario.TurnCap ||
+            scenarioTurnCount >= currentScenario.PlayerScript.Count)
+        {
+            EndScenario();
+            return;
+        }
+
+        PlayerMessage next = currentScenario.PlayerScript[scenarioTurnCount];
+        scenarioTurnCount++;
+
+        // if the script targets the player's own faction, broadcast instead
+        // (scripts are written generically and may name any of the four)
+        string target = (next.Target == playerFaction) ? "All" : next.Target;
+
+        GD.Print($"[SCENARIO] Player turn {scenarioTurnCount}: [{target}] {next.Content}");
+        SendPlayerMessage(target, next.Content);
+    }
+
+    // Called when the player script is exhausted or the turn cap is hit.
+    private void EndScenario()
+    {
+        GD.Print($"=== SCENARIO COMPLETE: {currentScenario.Id} ===");
+
+        string filename = $"{currentMode.ToLower()}_{currentScenario.Id}_run{currentRunIndex}.json";
+        ollamaInterface.logger.Export(filename);
+        GD.Print($"Log exported: {filename}");
+
+        isAutomatedRun = false;
+        isBaselineMode = false;
+        currentScenario = null;
     }
 }

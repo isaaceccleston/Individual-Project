@@ -18,6 +18,8 @@ public class ChatSession
     // private int replyBuffer = 512;
     private int replyBuffer = 150;
     public int maxTokens;
+    //
+    public int TotalMessagesTrimmed { get; private set; } = 0;
 
     public ChatSession(string modelID, string name, string systemPrompt, int modelContextWindow, int maxTokens)
     {
@@ -41,17 +43,13 @@ public class ChatSession
     public void ObserveMessage(string sender, string target, string message)
     {
         string framing;
-        
-        if(target == "All")
-            framing = $"{sender} to everyone: {message}";
-        else if(target == name)
-        {
-            framing = $"{sender} to you: {message}";
-        }
+
+        if (target == "All")
+            framing = $"[Public announcement] {sender}: {message}";
+        else if (target == name)
+            framing = $"[Private message to you from {sender}] {message}";
         else
-        {
-            framing = $"{sender} to {target}: {message}";
-        }
+            framing = $"[Overheard] {sender} to {target}: {message}";
 
         AddMessage("user", framing);
     }
@@ -71,6 +69,7 @@ public class ChatSession
         {
             GD.Print($"Trimming messages. Total tokens: {total}, Budget: {conversationBudget}"); // Debug log
             trimmedMessages.Add(messages[1]);
+            TotalMessagesTrimmed++;
             total -= EstimateTokens(messages[1].content);
             messages.RemoveAt(1);
         }
@@ -79,5 +78,15 @@ public class ChatSession
     public List<ChatMessage> GetMessages()
     {
         return new List<ChatMessage>(messages);
+    }
+
+    public int GetCurrentContextTokens()
+    {
+        return messages.Skip(1).Sum(m => EstimateTokens(m.content));
+    }
+
+    public int GetContextBudget()
+    {
+        return conversationBudget;
     }
 }
