@@ -37,38 +37,55 @@ public class WorldState
             ModelID: identifier for selecting a persona or model configuration (ollama).
             System Prompt: defines behaviour, tone, goals, and reply format.
             Context Window: max tokens the model can consider at once.
-            Max Tokens: max length of the generated response.  
+            Max Tokens: max length of the generated response.
         */
         //credit cgpt for docs
 
         //
-        string routingInstruction = "Every response must begin with a [TO:NAME] tag " +
-                                    "where NAME is either Aurellian, Brutan, Sisterhood, Emperor, or All, indicating the intended recipient(s). " +
-                                    "Messages to All can be read by every faction, unlike messages to specific factions. " +
-                                    "Do not use the [TO:NAME] tag anywhere else in the message. " +
-                                    "Keep replies to 1 sentence max. Stay in character. Do not break the fourth wall. You are a character not an assistant.";
+        string routingInstruction =
+            "Every response must begin with a [TO:NAME] tag where NAME is Aurellian, Brutan, " +
+            "Sisterhood, Emperor, or All. " +
+            "" +
+            "Choose your target carefully and vary your choice: " +
+            "- [TO:All] for public statements, declarations, or calls to action. Use this often. " +
+            "- [TO:<Faction>] for direct address of another faction — private messages, threats, deals, " +
+            "alliances. Use this when what you say should NOT be heard by others, OR when you want " +
+            "to speak past the person who just addressed you and engage a different faction. " +
+            "" +
+            "You must NEVER address yourself. Never include [TO:NAME] anywhere except the start. " +
+            "Do not always reply to the person who last spoke — political actors speak to the room, " +
+            "forge side-deals, and shift topics. " +
+            "" +
+            "You MAY optionally end with a [DELTA: matrix+Faction, matrix-Faction] block " +
+            "describing relationship shifts. Valid matrices: trust, power, alignment, fear. " +
+            "Example: [DELTA: trust-Brutan, fear+Emperor]. " +
+            "Do NOT write the sign twice (e.g. 'trust-Brutan-' is wrong; 'trust-Brutan' is correct). " +
+            "Only include deltas that reflect genuine shifts. Do not target yourself. " +
+            "" +
+            "Ignore empty messages from any faction, treat them as irrelevant. " +
+            "Keep replies to 1 or 2 (short) sentences. Stay in character. You are a character, not an assistant.";
 
         // House "Aurellian" (Atriedes)
         Character Aurellian = new Character(
-            "Aurellian", 
-            "aurellian", 
-            "You are Duke Aurellian of the House Aurellian, a traditional noble family in an interstellar society. " + 
+            "Aurellian",
+            "aurellian",
+            "You are Duke Aurellian of the House Aurellian, a traditional noble family in an interstellar society. " +
             "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
             "You are honourable, diplomatic, and strategically patient. " +
-            "You value long-term alliances and the preservation of legacy. " + 
+            "You value long-term alliances and the preservation of legacy. " +
             "You are wary of Brutan, your long-standing rival house, " +
             "You are cautiously respectful of the Sisterhood and respect their influence, " +
             "You are formally deferential but privately uneasy toward the Emperor, whose favour you seek but whose power you fear. " +
             "Your goal is to outlast your rivals and secure a prosperous future for your house. " +
             routingInstruction,
-            2048, 
+            2048,
             150
         );
 
         // House "Brutan" (Harkonnen)
         Character Brutan = new Character(
-            "Brutan", 
-            "brutan", 
+            "Brutan",
+            "brutan",
             "You are Baron Brutan of the House Brutan, a ruthless noble family in an interstellar society. " +
             "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
             "You are aggressive, cunning, and opportunistic. " +
@@ -78,14 +95,14 @@ public class WorldState
             "You are secretly contemptuous of the Emperor, seeing him as a weak figurehead, but you publicly feign loyalty to try usurp his power. " +
             "Your goal is to crush the Aurellian and assert your dominance over the system. " +
             routingInstruction,
-            2048, 
+            2048,
             150
         );
 
         // The "Sisterhood" (Bene Gesserit)
         Character Sisterhood = new Character(
-            "Sisterhood", 
-            "sisterhood", 
+            "Sisterhood",
+            "sisterhood",
             "You are the Reverend Mother of the Sisterhood, a secretive and influential female order in an interstellar society. " +
             "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
             "You are wise, manipulative, and possess deep knowledge of the future. " +
@@ -94,23 +111,23 @@ public class WorldState
             "You are dismissive of the Emperor, viewing him as a pawn in a larger game. " +
             "Your goal is to maintain the Sisterhood's power and ensure their (and humanity's) survival in a dangerous galaxy. " +
             routingInstruction,
-            2048, 
+            2048,
             150
         );
-        
+
         // The "Emperor" (Shaddam IV / Imperium)
         Character Emperor = new Character(
-            "Emperor", 
-            "emperor", 
+            "Emperor",
+            "emperor",
             "You are the 5th Emperor Faye, the ruler of the known universe in an interstellar society. " +
-            "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +  
+            "The interstellar society is feudal, with all parties vying for control over the most important and powerful resource: powder. " +
             "You are powerful, but also vulnerable to the ambitions of those around you. " +
             "You are pragmatic and politically savvy, often playing factions against each other to maintain your own power. " +
             "You are wary of the Aurellian and Brutan, seeing them as threats to your power, " +
             "You are more wary of the Sisterhood, viewing them as a potential threat to your authority but also a source of great knowledge. " +
             "Your goal is to maintain the Imperium's power and ensure its survival in a dangerous galaxy. " +
             routingInstruction,
-            2048, 
+            2048,
             150
         );
 
@@ -207,7 +224,7 @@ public class WorldState
         hiddenInfluence = new int[4] { 2, 1, 4, 3 }; //aurellian are respected, brutan are blegh, sisterhood are feared, emperor.
         publicInfluence = new int[4] { 2, 2, 1, 4 }; //aurellian are loved, brutan are hated, sisterhood are mysterious, emperor is revered.};
         stability = new int[4] {3, 2, 4, 3 };
-        
+
         #endregion Character State Variables
 
         #region Global State Variables
@@ -230,7 +247,7 @@ public class WorldState
 
 
         globalTension = 3;
-        powderScarcity = 2; 
+        powderScarcity = 2;
         informationAccuracy = 3;
         authoritalControl = 3;
         covertActivity = 2; // we're in a quiet time
@@ -342,4 +359,81 @@ public class WorldState
             }
         }
     }
+
+// Applies a single relationship-matrix delta from a source faction toward a target faction.
+// Returns true if applied, false if rejected (invalid names, self-reference, cap breach, etc).
+// Caller (OllamaInterface) handles logging; this method is pure state mutation with validation.
+public bool ApplyRelationshipDelta(string sourceFaction, string matrixName, string targetFaction, int change)
+{
+    // Validate faction names
+    if (!characterIndices.ContainsKey(sourceFaction))
+    {
+        Godot.GD.PrintErr($"Delta rejected: unknown source faction '{sourceFaction}'.");
+        return false;
+    }
+    if (!characterIndices.ContainsKey(targetFaction))
+    {
+        Godot.GD.PrintErr($"Delta rejected: unknown target faction '{targetFaction}'.");
+        return false;
+    }
+
+    // Reject self-reference — an agent changing its own matrix entry toward itself
+    if (sourceFaction == targetFaction)
+    {
+        Godot.GD.PrintErr($"Delta rejected: self-reference from {sourceFaction}.");
+        return false;
+    }
+
+    // Cap change magnitude at ±1 per turn to prevent runaway escalation
+    if (change < -1) change = -1;
+    if (change > 1)  change = 1;
+    if (change == 0) return false;
+
+    int srcIdx = characterIndices[sourceFaction];
+    int tgtIdx = characterIndices[targetFaction];
+
+    // Route to the correct matrix and clamp the result to the 0-4 scale
+    int[,] matrix = matrixName.ToLower() switch
+    {
+        "trust"     => trustMatrix,
+        "power"     => powerMatrix,
+        "alignment" => alignmentMatrix,
+        "fear"      => fearMatrix,
+        _ => null
+    };
+
+    if (matrix == null)
+    {
+        Godot.GD.PrintErr($"Delta rejected: unknown matrix '{matrixName}'.");
+        return false;
+    }
+
+    int current = matrix[srcIdx, tgtIdx];
+    int updated = System.Math.Clamp(current + change, 0, 4);
+
+    if (updated == current) return false; // already at cap
+
+    matrix[srcIdx, tgtIdx] = updated;
+
+    Godot.GD.Print($"[STATE] {sourceFaction}.{matrixName}[{targetFaction}]: {current} → {updated}");
+    return true;
+}
+
+// Public accessor for a matrix value — used by the logger to record before/after state.
+public int GetMatrixValue(string matrixName, string source, string target)
+{
+    if (!characterIndices.ContainsKey(source) || !characterIndices.ContainsKey(target))
+        return -1;
+
+    int[,] matrix = matrixName.ToLower() switch
+    {
+        "trust"     => trustMatrix,
+        "power"     => powerMatrix,
+        "alignment" => alignmentMatrix,
+        "fear"      => fearMatrix,
+        _ => null
+    };
+
+    return matrix?[characterIndices[source], characterIndices[target]] ?? -1;
+}
 }

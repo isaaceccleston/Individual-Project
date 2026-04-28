@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class LogEntry
 {
     public int Turn { get; set; }
@@ -5,7 +7,12 @@ public class LogEntry
     public string Receiver { get; set; }
     public string Role { get; set; } //e.g.: "user" | "assistant" | "system"
     public string Content { get; set; }
-    public int EstimatedTokens { get; set; }
-    public int RunningTokens { get; set; } // tokens used in the conversation up to this point
+    public int EstimatedTokens { get; set; } // this msg estimate
+    //
+    public int SessionContextTokens { get; set; }
+    public int SessionContextBudget { get; set; }
+    public int SessionTrimmedCount { get; set; }
+    //
     public long LatencyMs { get; set; } // time taken for the model to respond in milliseconds
+    public List<string> AppliedDeltas { get; set; } = new();
 }
