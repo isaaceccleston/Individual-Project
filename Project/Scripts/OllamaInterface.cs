@@ -26,6 +26,14 @@ public partial class OllamaInterface : Node2D
     //
     private Stopwatch requestStopwatch = new Stopwatch();
     //
+    // request timeout + retry state for graceful HTTP failure handling
+    private const float RequestTimeoutSec = 90f;
+    private const int MaxRetries = 2;
+    private const float RetryDelaySec = 2f;
+    private int retryCount = 0;
+    private string lastRequestJson;
+    private string[] lastRequestHeaders;
+    //
     [Signal]
     public delegate void ModelReplyEventHandler(string sender, string target, string message);
 
@@ -34,10 +42,12 @@ public partial class OllamaInterface : Node2D
         API_KEY = GetAPIKey("/Users/isaaceccleston/Desktop/api-key.txt");
 
         httpRequest = new HttpRequest();
+        httpRequest.Timeout = RequestTimeoutSec;
         AddChild(httpRequest);
         httpRequest.RequestCompleted += OnReply;
 
         summaryHttpRequest = new HttpRequest();
+        summaryHttpRequest.Timeout = RequestTimeoutSec;
         AddChild(summaryHttpRequest);
         summaryHttpRequest.RequestCompleted += OnSummaryReply;
     }
@@ -81,21 +91,72 @@ public partial class OllamaInterface : Node2D
         };
 
         string json = JsonSerializer.Serialize(body);
-        string[] headers = 
+        string[] headers =
         {
-            "Content-Type: application/json", 
-            $"Authorization: Bearer {API_KEY}" 
+            "Content-Type: application/json",
+            $"Authorization: Bearer {API_KEY}"
         };
 
+        // cache for retry
+        lastRequestJson = json;
+        lastRequestHeaders = headers;
+
         requestStopwatch.Restart();
-        
+
         Error err = httpRequest.Request(targetURL, headers, Godot.HttpClient.Method.Post, json);
         if (err != Error.Ok)
         {
             GD.PrintErr("HTTP Request failed: ", err);
+            HandleSendFailure($"HTTP send error: {err}", 0);
         }
 
         GD.Print($"Prompting {currentSession.name} to respond");
+    }
+
+    private void RetrySend()
+    {
+        if (currentSession == null)
+        {
+            GD.PrintErr("RetrySend with no current session — aborting.");
+            return;
+        }
+        GD.Print($"Retrying request for {currentSession.name} (attempt {retryCount}/{MaxRetries})");
+        requestStopwatch.Restart();
+        Error err = httpRequest.Request(targetURL, lastRequestHeaders, Godot.HttpClient.Method.Post, lastRequestJson);
+        if (err != Error.Ok)
+        {
+            GD.PrintErr("Retry send failed: ", err);
+            HandleSendFailure($"Retry send error: {err}", 0);
+        }
+    }
+
+    // Common failure path — either retry, or give up and emit a placeholder
+    // so the agent turn queue in Main can advance instead of hanging.
+    private void HandleSendFailure(string reason, long elapsedMs)
+    {
+        GD.PrintErr($"Request failure for {currentSession?.name}: {reason}");
+
+        if (retryCount < MaxRetries)
+        {
+            retryCount++;
+            var t = GetTree().CreateTimer(RetryDelaySec);
+            t.Timeout += RetrySend;
+            return;
+        }
+
+        // exhausted retries — log + emit fallback so the runtime continues
+        string failMsg = $"[{currentSession?.name} failed to respond: {reason}]";
+        logger.LogMessage(
+            currentSession?.name ?? "Unknown",
+            "All",
+            "system",
+            failMsg,
+            0,
+            elapsedMs);
+
+        retryCount = 0;
+        waitingForResponse = false;
+        EmitSignal(SignalName.ModelReply, currentSession?.name ?? "Unknown", "All", failMsg);
     }
 
     public void PromptCurrentAgent()
@@ -147,16 +208,23 @@ public partial class OllamaInterface : Node2D
     {
         requestStopwatch.Stop();
         long elapsedMs = requestStopwatch.ElapsedMilliseconds;
-       
-        waitingForResponse = false;
+
+        // transport-level failure (timeout / connection / DNS / etc.)
+        var resultEnum = (HttpRequest.Result)result;
+        if (resultEnum != HttpRequest.Result.Success)
+        {
+            HandleSendFailure($"transport result={resultEnum} after {elapsedMs}ms", elapsedMs);
+            return;
+        }
 
         string responseText = Encoding.UTF8.GetString(body);
 
         GD.Print($"response: {responseText}"); // Debug log
 
+        // HTTP-level failure (non-200)
         if (responseCode != 200)
         {
-            GD.PrintErr($"HTTP Error {responseCode}: {responseText}");
+            HandleSendFailure($"HTTP {responseCode}", elapsedMs);
             return;
         }
 
@@ -172,6 +240,10 @@ public partial class OllamaInterface : Node2D
             if (string.IsNullOrWhiteSpace(rawResponse))
             {
                 GD.PrintErr($"Empty response from {currentSession.name}, skipping.");
+                logger.LogMessage(currentSession.name, "All", "system",
+                    "[Empty response from model]", 0, elapsedMs);
+                retryCount = 0;
+                waitingForResponse = false;
                 EmitSignal(SignalName.ModelReply, currentSession.name, "All", "[No response]");
                 return;
             }
@@ -180,27 +252,45 @@ public partial class OllamaInterface : Node2D
             currentSession.AddMessage("assistant", cleanResponse);
 
             logger.LogMessage(
-                currentSession.name, 
-                target, 
-                "assistant", 
+                currentSession.name,
+                target,
+                "assistant",
                 cleanResponse,
                 (int)(cleanResponse.Length / 3.5f),
                 elapsedMs);
 
+            retryCount = 0;
+            waitingForResponse = false;
             EmitSignal(SignalName.ModelReply, currentSession.name, target, cleanResponse);
         }
         catch (Exception e)
         {
             GD.PrintErr("JSON parse error: " + e.Message);
+            // treat as a hard failure so the runtime doesn't hang
+            HandleSendFailure($"JSON parse error: {e.Message}", elapsedMs);
+            return;
         }
-        
+
         GD.Print("Received response for " + currentSession.name); // Debug log
-        
     }
 
     private void OnSummaryReply(long result, long responseCode, string[] headers, byte[] body)
     {
-        if (responseCode == 200)
+        var resultEnum = (HttpRequest.Result)result;
+
+        if (resultEnum != HttpRequest.Result.Success)
+        {
+            GD.PrintErr($"Summary transport error: {resultEnum}");
+            logger.LogMessage(currentSession?.name ?? "Unknown", "All", "system",
+                $"[Summary failed: transport {resultEnum}]", 0, 0);
+        }
+        else if (responseCode != 200)
+        {
+            GD.PrintErr($"Summary HTTP error {responseCode}");
+            logger.LogMessage(currentSession?.name ?? "Unknown", "All", "system",
+                $"[Summary failed: HTTP {responseCode}]", 0, 0);
+        }
+        else
         {
             try
             {
@@ -217,14 +307,13 @@ public partial class OllamaInterface : Node2D
             catch (Exception e)
             {
                 GD.PrintErr("Summary parse error: " + e.Message);
+                logger.LogMessage(currentSession?.name ?? "Unknown", "All", "system",
+                    $"[Summary parse error: {e.Message}]", 0, 0);
             }
         }
-        else
-        {
-            GD.PrintErr($"Summary HTTP error {responseCode}");
-        }
 
-        currentSession.trimmedMessages.Clear();
+        // either way, drop trimmed messages so we don't loop on the same summary
+        currentSession?.trimmedMessages.Clear();
         waitingForResponse = false;
 
         if (hasPendingMessage)
@@ -233,7 +322,7 @@ public partial class OllamaInterface : Node2D
             Send();
         }
 
-        GD.Print("Summary response received for " + currentSession.name); // Debug log
+        GD.Print("Summary response received for " + currentSession?.name);
     }
 
     private (string target, string clean) ParseRouting(string raw)

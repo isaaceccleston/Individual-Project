@@ -10,5 +10,5 @@ public class Scenario
     public string Description { get; set; }           // shown to judge LLM, not to agents
     public Dictionary<string, int> StateOverrides { get; set; } = new();
     public List<PlayerMessage> PlayerScript { get; set; } = new();
-    public int TurnCap { get; set; } = 8;
+    public int TurnCap { get; set; } = 6;
 }
