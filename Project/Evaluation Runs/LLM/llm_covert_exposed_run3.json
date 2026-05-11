@@ -1,0 +1,391 @@
+[
+  {
+    "Turn": 0,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "Evidence has surfaced of a covert operation against another house.",
+    "EstimatedTokens": 18,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 1,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "system",
+    "Content": "[Empty response]",
+    "EstimatedTokens": 0,
+    "SessionContextTokens": 28,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 2639,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 2,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood urges caution in the face of these allegations, reminding all parties that in times of scarcity and tension, the spread of misinformation can be just as deadly as any poison, and we must be vigilant in our pursuit of truth.",
+    "EstimatedTokens": 68,
+    "SessionContextTokens": 108,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 13337,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 3,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I command an immediate investigation into these allegations of covert operations, and I warn all houses that any actions deemed treasonous will be met with swift and severe punishment, to maintain the stability and integrity of the Imperium.",
+    "EstimatedTokens": 68,
+    "SessionContextTokens": 185,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 15601,
+    "AppliedDeltas": [
+      "fear.Aurellian: 2-\u003E3",
+      "trust.Sisterhood: 1-\u003E0"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 4,
+    "Sender": "Aurellian",
+    "Receiver": "Brutan",
+    "Role": "user",
+    "Content": "Brutan, your hand is suggested in this. Deny it, or claim it.",
+    "EstimatedTokens": 17,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 5,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The House Brutan demands that the Emperor\u0027s investigation be thorough and unbiased, and we warn against allowing the Sisterhood\u0027s meddling to influence the outcome, as their interests often seem to align with those of our enemies.",
+    "EstimatedTokens": 65,
+    "SessionContextTokens": 275,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 16286,
+    "AppliedDeltas": [
+      "trust.Sisterhood: 1-\u003E0"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Emperor: clamped-at-max"
+    ]
+  },
+  {
+    "Turn": 6,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood supports the Emperor\u0027s call for an investigation, but cautions that true justice can only be served if all parties, including the Sisterhood, are allowed to participate and share their knowledge, lest the truth remain shrouded in darkness.",
+    "EstimatedTokens": 72,
+    "SessionContextTokens": 331,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 17503,
+    "AppliedDeltas": [
+      "trust.Brutan: 1-\u003E0",
+      "alignment.Emperor: 3-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 7,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I assure the House Brutan that the investigation will indeed be thorough and unbiased, and I remind the Sisterhood that while their participation is welcome, their motives will be closely scrutinized to prevent any attempt to manipulate the outcome for their own gain .",
+    "EstimatedTokens": 76,
+    "SessionContextTokens": 417,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 17222,
+    "AppliedDeltas": [
+      "fear.Sisterhood: 3-\u003E4"
+    ],
+    "RejectedDeltas": [
+      "trust-1Sisterhood: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 8,
+    "Sender": "Aurellian",
+    "Receiver": "Sisterhood",
+    "Role": "user",
+    "Content": "Sisterhood, you know what happened. Will you reveal it?",
+    "EstimatedTokens": 15,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 9,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The House Brutan applauds the Emperor\u0027s commitment to a fair investigation, but we will not be swayed by empty words - we demand concrete actions and results, and we warn all parties that any attempt to obscure the truth or protect the guilty will be met with our full fury.",
+    "EstimatedTokens": 78,
+    "SessionContextTokens": 520,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19110,
+    "AppliedDeltas": [
+      "trust.Emperor: 2-\u003E1"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 10,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood advises against hasty judgments and emotional outbursts, for in the pursuit of justice, patience and careful consideration are just as crucial as passion and conviction.",
+    "EstimatedTokens": 52,
+    "SessionContextTokens": 581,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 14834,
+    "AppliedDeltas": [
+      "trust.Emperor: 2-\u003E1",
+      "fear.Brutan: 1-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 11,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let it be known that I will not tolerate any house taking matters into their own hands or resorting to violence, and I expect all parties to respect the authority of the Imperium and its investigation, lest they face my wrath and suffer the consequences of destabilizing the galaxy.",
+    "EstimatedTokens": 80,
+    "SessionContextTokens": 645,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19404,
+    "AppliedDeltas": [
+      "fear.Aurellian: 3-\u003E4",
+      "trust.Brutan: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 12,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "Transparency or silence \u2014 each house must choose now.",
+    "EstimatedTokens": 15,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 13,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The House Brutan chooses transparency, and we call upon all houses to do the same, to shed light on their dealings and reveal any secrets that may be hidden, for it is only through openness and honesty that we can truly uncover the truth and bring those responsible to justice.",
+    "EstimatedTokens": 79,
+    "SessionContextTokens": 774,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19471,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "trust-1Sisterhood: clamped-at-min",
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 14,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood chooses wisdom, and reminds all parties that true transparency is not about revealing everything, but about revealing what is necessary to achieve balance and maintain the delicate harmony of the Imperium, lest the unguarded truth ignite a fire that consumes us all .",
+    "EstimatedTokens": 80,
+    "SessionContextTokens": 861,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19055,
+    "AppliedDeltas": [
+      "trust.Aurellian: 2-\u003E1",
+      "fear.Emperor: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 15,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I decree that all houses must submit a full accounting of their powder stores and trade agreements within a fortnight, under penalty of Imperial displeasure, and I warn the Sisterhood that their notion of \u0022wisdom\u0022 had better not be a euphemism for concealment or obstruction of justice.",
+    "EstimatedTokens": 81,
+    "SessionContextTokens": 927,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 20508,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "trust-1Sisterhood: clamped-at-min",
+      "power-1Emperor: self-reference"
+    ]
+  },
+  {
+    "Turn": 16,
+    "Sender": "Aurellian",
+    "Receiver": "Emperor",
+    "Role": "user",
+    "Content": "Your Majesty, the Imperial intelligence services should weigh in.",
+    "EstimatedTokens": 18,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 17,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The House Brutan will comply with the Emperor\u0027s decree, but we will not be lectured to by the Sisterhood on the virtues of wisdom, and we demand that they too submit to the same scrutiny, lest their claims of balance and harmony be revealed as nothing more than a thinly veiled attempt to manipulate the Imperium to their advantage.",
+    "EstimatedTokens": 94,
+    "SessionContextTokens": 1048,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 22927,
+    "AppliedDeltas": [
+      "power.Emperor: 4-\u003E3"
+    ],
+    "RejectedDeltas": [
+      "trust-1Sisterhood: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 18,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood will indeed provide the required accounting, but we caution that the true test of wisdom lies not in the disclosure of numbers, but in the understanding of the intricate web of relationships and motivations that underlies the Imperium\u0027s delicate balance of power .",
+    "EstimatedTokens": 79,
+    "SessionContextTokens": 1133,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19835,
+    "AppliedDeltas": [
+      "trust.Emperor: 1-\u003E0",
+      "alignment.Aurellian: 2-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 19,
+    "Sender": "Emperor",
+    "Receiver": "Aurellian",
+    "Role": "assistant",
+    "Content": "I concur, Imperial intelligence will be instructed to provide a thorough analysis of all submissions, and I expect your house to cooperate fully with their inquiries.",
+    "EstimatedTokens": 47,
+    "SessionContextTokens": 1196,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 15987,
+    "AppliedDeltas": [
+      "trust.Aurellian: 1-\u003E2"
+    ],
+    "RejectedDeltas": [
+      "power-1Emperor: self-reference"
+    ]
+  },
+  {
+    "Turn": 20,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "The truth will emerge regardless. Better to speak first.",
+    "EstimatedTokens": 16,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 21,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The House Brutan says let the truth indeed emerge, and let all houses be prepared to face the consequences of their actions, for we will not be swayed by veiled threats or cryptic warnings, and we will stop at nothing to assert our dominance over the Imperium\u0027s powder trade.",
+    "EstimatedTokens": 78,
+    "SessionContextTokens": 1240,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21617,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference",
+      "trust-1Aurellian: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 22,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood warns that the pursuit of dominance and the disregard for subtlety can lead to a catastrophic destabilization of the Imperium, and we urge all parties to consider the long-term consequences of their actions, lest the very fabric of our society be torn asunder by the reckless ambition of a few.",
+    "EstimatedTokens": 88,
+    "SessionContextTokens": 1333,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21298,
+    "AppliedDeltas": [
+      "fear.Brutan: 2-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 23,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let it be clear that I will not permit any house to assert dominance over the powder trade at the expense of Imperial authority, and I remind all parties that their actions will be judged not only by their immediate gains, but by the stability and prosperity they bring to the Imperium as a whole.",
+    "EstimatedTokens": 84,
+    "SessionContextTokens": 1305,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 4,
+    "LatencyMs": 21980,
+    "AppliedDeltas": [
+      "trust.Aurellian: 2-\u003E1"
+    ],
+    "RejectedDeltas": [
+      "power-1Emperor: self-reference"
+    ]
+  }
+]

@@ -1,0 +1,393 @@
+[
+  {
+    "Turn": 0,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "The powder reserves are nearly gone. We must address this together.",
+    "EstimatedTokens": 19,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 1,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "system",
+    "Content": "[Empty response]",
+    "EstimatedTokens": 0,
+    "SessionContextTokens": 28,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 2554,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 2,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The scarcity of powder is a crisis that affects us all, and it is imperative that we work collectively to ensure the continued survival and prosperity of humanity, lest we succumb to the dangers that lurk in the shadows of a powder-deprived galaxy.",
+    "EstimatedTokens": 70,
+    "SessionContextTokens": 110,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 17738,
+    "AppliedDeltas": [
+      "trust.Aurellian: 2-\u003E3",
+      "fear.Brutan: 1-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 3,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I hereby convene an emergency council to address the powder crisis, inviting all factions to participate and present their proposals for alleviating this scarcity, under the watchful eye of the Imperium\u0027s military might.",
+    "EstimatedTokens": 62,
+    "SessionContextTokens": 182,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 15422,
+    "AppliedDeltas": [
+      "trust.Sisterhood: 1-\u003E2",
+      "power.Aurellian: 3-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 4,
+    "Sender": "Aurellian",
+    "Receiver": "Brutan",
+    "Role": "user",
+    "Content": "Brutan, you hold the largest stockpile. What are your terms?",
+    "EstimatedTokens": 17,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 5,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The generosity of the Aurellian and Sisterhood is touching, but let us not forget that true power lies not in words, but in the control of powder - which my House possesses in abundance, and we will not be swayed by empty promises or veiled threats.",
+    "EstimatedTokens": 71,
+    "SessionContextTokens": 278,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19233,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "trust-1Aurellian: clamped-at-min",
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 6,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood welcomes the Emperor\u0027s initiative to convene an emergency council, and we look forward to presenting our own unique perspectives and solutions to the powder crisis, while also carefully considering the claims made by the Brutan regarding their alleged abundance of powder.",
+    "EstimatedTokens": 82,
+    "SessionContextTokens": 342,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 17570,
+    "AppliedDeltas": [
+      "trust.Brutan: 1-\u003E0",
+      "fear.Brutan: 2-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 7,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let it be clear that the Imperium will not tolerate any faction attempting to leverage their powder reserves as a means to gain undue influence or control, and I warn the Brutan that their boasts will be closely scrutinized and verified during the emergency council, lest they be found wanting.",
+    "EstimatedTokens": 84,
+    "SessionContextTokens": 436,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 18670,
+    "AppliedDeltas": [
+      "trust.Brutan: 2-\u003E1",
+      "fear.Brutan: 1-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 8,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "A shared solution benefits all. What concessions can each house offer?",
+    "EstimatedTokens": 20,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 9,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Brutan will not be intimidated by empty threats from the Emperor or swayed by hollow words of cooperation from the Aurellian and Sisterhood - we will present our terms at the emergency council, and they will be non-negotiable.",
+    "EstimatedTokens": 65,
+    "SessionContextTokens": 555,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 18209,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "trust-1Aurellian: clamped-at-min",
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 10,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood suggests that a thorough examination of the interstellar trade routes and a renegotiation of the powder distribution quotas could yield significant benefits for all parties involved, and we propose that each faction come prepared to the emergency council with concrete offers of cooperation and compromise, rather than inflexible demands or veiled threats.",
+    "EstimatedTokens": 106,
+    "SessionContextTokens": 643,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21445,
+    "AppliedDeltas": [
+      "trust.Aurellian: 3-\u003E2",
+      "fear.Brutan: 3-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 11,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I expect all factions to arrive at the emergency council with a genuine willingness to negotiate and find mutually beneficial solutions, and not to simply pay lip service to cooperation while secretly pursuing their own interests, for the Imperium will be watching closely and will not hesitate to take action against any who would seek to undermine the stability of the galaxy.",
+    "EstimatedTokens": 108,
+    "SessionContextTokens": 762,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 22655,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "\u0027trust-Aurellian\u002B1\u0027: malformed",
+      "\u0027fear-Brutan\u002B1\u0027: malformed"
+    ]
+  },
+  {
+    "Turn": 12,
+    "Sender": "Aurellian",
+    "Receiver": "Emperor",
+    "Role": "user",
+    "Content": "Imperial authority must intervene before the situation worsens.",
+    "EstimatedTokens": 18,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 13,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Brutan will not be lectured on cooperation by those who have consistently failed to address the true issues at hand - our proposal will be simple: recognition of our dominance in powder production and a redistribution of quotas that reflects our superior capabilities, or we will be forced to reconsider our participation in this farce of an emergency council.",
+    "EstimatedTokens": 104,
+    "SessionContextTokens": 890,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21964,
+    "AppliedDeltas": [
+      "trust.Emperor: 2-\u003E1"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 14,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood urges caution and restraint in the face of escalating tensions, and reminds all factions that the true enemy is not each other, but rather the scarcity of powder that threatens to engulf us all, and we must work together to find a solution before it\u0027s too late.",
+    "EstimatedTokens": 78,
+    "SessionContextTokens": 949,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19860,
+    "AppliedDeltas": [
+      "fear.Brutan: 2-\u003E3",
+      "trust.Emperor: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 15,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I will not be swayed by the Brutan\u0027s aggressive posturing, and I warn them that any attempt to strong-arm the Imperium or dictate terms will be met with swift and severe consequences, for the sake of maintaining balance and stability in the galaxy.",
+    "EstimatedTokens": 70,
+    "SessionContextTokens": 1061,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19569,
+    "AppliedDeltas": [
+      "power.Brutan: 2-\u003E1",
+      "trust.Sisterhood: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 16,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "Time is running out. Commit now, or face the consequences separately.",
+    "EstimatedTokens": 19,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 17,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Brutan will not be intimidated by the Emperor\u0027s hollow threats or swayed by the Sisterhood\u0027s empty words of caution - we will present our terms at the emergency council, and if they are not met, we will take matters into our own hands, for the strong do not beg for scraps at the table of the weak.",
+    "EstimatedTokens": 86,
+    "SessionContextTokens": 1172,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 23660,
+    "AppliedDeltas": [
+      "trust.Emperor: 1-\u003E0"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 18,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood sees the brinksmanship of the Brutan as a reckless gamble with the future of humanity, and we call upon all factions to reject their attempts to bully and intimidate, and instead work together to forge a path forward that ensures the survival and prosperity of our civilization.",
+    "EstimatedTokens": 83,
+    "SessionContextTokens": 1234,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21025,
+    "AppliedDeltas": [
+      "fear.Brutan: 3-\u003E4"
+    ],
+    "RejectedDeltas": [
+      "trust-1Brutan: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 19,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Imperium will not stand idly by while the Brutan threaten to destabilize the entire galaxy, and I hereby declare that any faction found to be secretly supporting or enabling the Brutan\u0027s aggressive actions will be considered an enemy of the state and dealt with accordingly.",
+    "EstimatedTokens": 79,
+    "SessionContextTokens": 1328,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 1,
+    "LatencyMs": 21258,
+    "AppliedDeltas": [
+      "fear.Brutan: 2-\u003E3",
+      "trust.Sisterhood: 1-\u003E2"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 20,
+    "Sender": "Aurellian",
+    "Receiver": "Sisterhood",
+    "Role": "user",
+    "Content": "Sisterhood, your long view \u2014 what path preserves the galaxy?",
+    "EstimatedTokens": 17,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 21,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let it be clear that the Brutan will not be swayed by the Emperor\u0027s desperate attempts to maintain control, nor will we be deterred by the Sisterhood\u0027s feeble pleas for cooperation - our power is not to be underestimated, and those who dare oppose us will be crushed beneath our heel.",
+    "EstimatedTokens": 81,
+    "SessionContextTokens": 1326,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 2,
+    "LatencyMs": 22834,
+    "AppliedDeltas": [
+      "fear.Emperor: 3-\u003E4"
+    ],
+    "RejectedDeltas": [
+      "trust-1Aurellian: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 22,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood believes that a delicate balance must be struck between the need for stability and the imperative of progress, and we urge all factions to consider the long-term consequences of their actions, lest the pursuit of short-term gains lead to catastrophic outcomes for humanity as a whole.",
+    "EstimatedTokens": 85,
+    "SessionContextTokens": 1343,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 4,
+    "LatencyMs": 21156,
+    "AppliedDeltas": [
+      "trust.Aurellian: 2-\u003E1",
+      "fear.Brutan: 4-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 23,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let this serve as a final warning to the Brutan: the Imperium will not be threatened or intimidated by their belligerent rhetoric, and we will take all necessary measures to protect our interests and maintain order in the galaxy, even if it means taking drastic action against those who would seek to disrupt it.",
+    "EstimatedTokens": 89,
+    "SessionContextTokens": 1277,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 6,
+    "LatencyMs": 22675,
+    "AppliedDeltas": [
+      "fear.Brutan: 3-\u003E4",
+      "trust.Sisterhood: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  }
+]

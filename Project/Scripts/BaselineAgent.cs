@@ -1,32 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-// Deterministic, non-LLM stand-in for an agent. Used as the comparison
-// baseline when evaluating the LLM agents: same routing format, same
-// turn cadence, same [DELTA: ...] state-mutation contract — but the
-// reply text and the deltas come from a fixed per-faction template
-// bank instead of being generated. No HTTP calls, instant return.
-//
-// Each template carries an optional bundle of (matrix, target, change)
-// shifts that are pushed through WorldState.ApplyRelationshipDelta when
-// the template fires, exactly like the LLM path's [DELTA: ...] block.
-// Successful applications are returned as "matrix.Target: before->after"
-// strings so Main can hand them to ConversationLogger.AppliedDeltas,
-// keeping baseline and LLM logs directly comparable.
 public static class BaselineAgent
 {
     private static readonly Random rng = new();
-
-    // (matrix, targetFaction, change) — change is ±1; targetFaction must
-    // not equal the speaking faction (self-deltas are rejected by
-    // WorldState.ApplyRelationshipDelta anyway).
     private sealed record DeltaSpec(string Matrix, string Target, int Change);
-
     private sealed record Template(string Content, params DeltaSpec[] Deltas);
 
-    // Each line reflects the faction's standing personality so the deltas
-    // bias toward sensible directions (e.g. Brutan templates erode trust
-    // toward rivals, Aurellian templates strengthen alignment with allies).
     private static readonly Dictionary<string, Template[]> templates = new()
     {
         ["Aurellian"] = new Template[]
@@ -85,11 +65,6 @@ public static class BaselineAgent
         },
     };
 
-    // Returns the routing target, the reply content, and the list of
-    // delta-application strings (e.g. "trust.Brutan: 2->1") for the logger.
-    // The reply mirrors the privacy of the most recent inbound message —
-    // private replies if the player addressed this faction directly, otherwise
-    // a public broadcast.
     public static (string target, string content, List<string> appliedDeltas) Respond(
         string faction,
         string lastSender,
@@ -105,8 +80,6 @@ public static class BaselineAgent
             return (target, "[no template]", new List<string>());
         }
 
-        // deterministic-ish: vary by global tension to give some
-        // state-sensitivity, but reproducible per turn.
         int idx = (rng.Next(bank.Length) + (worldState?.globalTension ?? 0)) % bank.Length;
         Template tpl = bank[idx];
 

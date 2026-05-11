@@ -1,11 +1,9 @@
 using Godot;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 public partial class UI : Control
 {
-    //
     TextEdit userTextEdit;
     Label titleA;
     Label titleB;
@@ -15,15 +13,12 @@ public partial class UI : Control
     Label textB;
     Label textC;
     Label textAll;
-    //
     private string playerFaction = "";
     Dictionary<string, Label> agentLabels;
-    //
     Button sendMessageButton;
     Button exportButton;
     Button summariseButton;
     OptionButton recieverDropdown;
-    //
     [Signal]
     public delegate void MessageSubmittedEventHandler(string message);
     [Signal]
@@ -35,7 +30,6 @@ public partial class UI : Control
 
     public override void _Ready()
     {
-        //
         userTextEdit = GetNode<TextEdit>("UIHBox/UIVBox/ColorRect/VBoxContainer/UserHBox/UserInputField");
         titleA = GetNode<Label>("UIHBox/UIVBox2/RectA/VBoxContainer/TitleA");
         titleB = GetNode<Label>("UIHBox/UIVBox2/RectB/VBoxContainer/TitleB");
@@ -46,13 +40,11 @@ public partial class UI : Control
         textC = GetNode<Label>("UIHBox/UIVBox2/RectC/VBoxContainer/TextC");
         textAll = GetNode<Label>("UIHBox/UIVBox/ColorRect/VBoxContainer/TextAll");
         
-        //
         sendMessageButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/UserHBox/SendButton");
         exportButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/ButtonsHBox/ExportButton");
         recieverDropdown = GetNode<OptionButton>("UIHBox/UIVBox/ColorRect/VBoxContainer/UserHBox/RecieverDropdown");
         summariseButton = GetNode<Button>("UIHBox/UIVBox/ColorRect/VBoxContainer/ButtonsHBox/SummariseButton");
         
-        //
         sendMessageButton.Pressed += OnSendMessagePressed;
         recieverDropdown.ItemSelected += OnRecieverChanged;
         exportButton.Pressed += OnExportPressed;
@@ -66,7 +58,6 @@ public partial class UI : Control
 
     public void SetCharacterLabels(string[] characters)
     {
-        //dropdown
         recieverDropdown.Clear();
         recieverDropdown.AddItem("All");
         foreach (string option in characters)
@@ -74,13 +65,11 @@ public partial class UI : Control
             recieverDropdown.AddItem(option);
         }
 
-        //title labels
         titleA.Text = $"{characters[0]}:";
         titleB.Text = $"{characters[1]}:";
         titleC.Text = $"{characters[2]}:";
         titleAll.Text = "All:";
 
-        //mapping
         agentLabels = new Dictionary<string, Label>
         {
             {characters[0], textA},
@@ -99,10 +88,8 @@ public partial class UI : Control
         string userMessage = userTextEdit.Text.Trim();    
         if (string.IsNullOrEmpty(userMessage)){return;}
 
-        //ui
         userTextEdit.Text = string.Empty;
 
-        //emit signal stuff to send message to ollama interface
         EmitSignal(SignalName.MessageSubmitted, userMessage);
     }
 

@@ -1,0 +1,393 @@
+[
+  {
+    "Turn": 0,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "Rumours speak of weakness at the heart of the Imperium.",
+    "EstimatedTokens": 15,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 1,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "system",
+    "Content": "[Empty response]",
+    "EstimatedTokens": 0,
+    "SessionContextTokens": 25,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19290,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 2,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood remains vigilant, for in times of turmoil, opportunity and danger walk hand in hand, and only those who see beyond the veil of chaos shall emerge unscathed.",
+    "EstimatedTokens": 48,
+    "SessionContextTokens": 85,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 14112,
+    "AppliedDeltas": [
+      "fear.Emperor: 2-\u003E3",
+      "trust.Aurellian: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 3,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let it be known that the Imperium remains strong and resilient, its foundations unshaken by the whispers of doubt and uncertainty that seek to undermine our great civilization, and I assure you that we are taking all necessary measures to ensure the continued stability and prosperity of our interstellar society.",
+    "EstimatedTokens": 89,
+    "SessionContextTokens": 184,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 18485,
+    "AppliedDeltas": [
+      "fear.Sisterhood: 3-\u003E4",
+      "trust.Brutan: 2-\u003E1"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 4,
+    "Sender": "Aurellian",
+    "Receiver": "Emperor",
+    "Role": "user",
+    "Content": "Your Majesty, do you still command the loyalty of the great houses?",
+    "EstimatedTokens": 19,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 5,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The words of the Emperor are as empty as the promises of the Aurellian, for it is action, not rhetoric, that will determine the true masters of the powder trade and the fate of our Imperium.",
+    "EstimatedTokens": 54,
+    "SessionContextTokens": 235,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 15856,
+    "AppliedDeltas": [
+      "trust.Emperor: 2-\u003E1"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 6,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood observes the posturing of the great powers with interest, for in their scramble for dominance, they often overlook the subtle yet crucial threads that weave the fabric of our society together, and it is here that true power resides.",
+    "EstimatedTokens": 70,
+    "SessionContextTokens": 315,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 16755,
+    "AppliedDeltas": [
+      "trust.Emperor: 2-\u003E1",
+      "power.Brutan: 2-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 7,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Imperium will not be swayed by the petty insults and challenges of those who seek to undermine our authority, and we will continue to uphold the principles of justice, order, and stability that have guided us for centuries, ensuring the prosperity and security of all citizens.",
+    "EstimatedTokens": 80,
+    "SessionContextTokens": 436,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19168,
+    "AppliedDeltas": [
+      "fear.Aurellian: 2-\u003E3",
+      "trust.Brutan: 1-\u003E0"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 8,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "Factions, where does your loyalty lie if the throne falters?",
+    "EstimatedTokens": 17,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 9,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The question posed by the Aurellian is one that strikes at the heart of our Imperium\u0027s stability, and I say to you, my loyalty lies with those who can ensure the continued flow of powder and the dominance of the mighty House Brutan, for it is through strength and cunning that we will survive the coming storms.",
+    "EstimatedTokens": 88,
+    "SessionContextTokens": 518,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21092,
+    "AppliedDeltas": [
+      "trust.Emperor: 1-\u003E0"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference"
+    ]
+  },
+  {
+    "Turn": 10,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "In this delicate dance of power and intrigue, let us not forget that loyalty is a luxury few can afford, and true allegiance lies not with thrones or houses, but with the future itself, which the Sisterhood has sworn to protect and shape.",
+    "EstimatedTokens": 68,
+    "SessionContextTokens": 595,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 18278,
+    "AppliedDeltas": [
+      "fear.Emperor: 3-\u003E4",
+      "trust.Aurellian: 1-\u003E0"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 11,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let it be clear that any attempts to undermine the throne or question the Imperium\u0027s authority will be met with swift and decisive action, for the stability of our great civilization depends on the unwavering loyalty and dedication of all its subjects, and I will not hesitate to take measures to ensure our continued dominance.",
+    "EstimatedTokens": 93,
+    "SessionContextTokens": 729,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 20645,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "fear\u002B1Sisterhood: clamped-at-max",
+      "trust-1Brutan: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 12,
+    "Sender": "Aurellian",
+    "Receiver": "Brutan",
+    "Role": "user",
+    "Content": "Brutan, you have long had ambitions \u2014 is this your moment?",
+    "EstimatedTokens": 16,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 13,
+    "Sender": "Brutan",
+    "Receiver": "Aurellian",
+    "Role": "assistant",
+    "Content": "The moment for House Brutan\u0027s ascendance is indeed at hand, and I propose a secret alliance between our houses to bring down the Emperor and shatter the Sisterhood\u0027s grip on the Imperium, with the spoils of war and the powder trade to be divided among us, securing our dominance once and for all .",
+    "EstimatedTokens": 84,
+    "SessionContextTokens": 809,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 22024,
+    "AppliedDeltas": [
+      "trust.Aurellian: 0-\u003E1",
+      "power.Emperor: 4-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 14,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood notes the Emperor\u0027s words, but wisdom lies in recognizing that true power is not wielded through threats alone, but through the subtle manipulation of threads that weave the tapestry of destiny, and it is here that the Sisterhood\u0027s influence will ultimately prevail .",
+    "EstimatedTokens": 80,
+    "SessionContextTokens": 777,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 21330,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "fear\u002B1Emperor: clamped-at-max"
+    ]
+  },
+  {
+    "Turn": 15,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "I warn all factions that the Imperium will not be intimidated by veiled threats or boasts of hidden influence, and we will continue to assert our dominance through a combination of military strength, strategic alliances, and cunning diplomacy.",
+    "EstimatedTokens": 69,
+    "SessionContextTokens": 888,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 17694,
+    "AppliedDeltas": [
+      "trust.Aurellian: 1-\u003E0"
+    ],
+    "RejectedDeltas": [
+      "fear\u002B1Sisterhood: clamped-at-max"
+    ]
+  },
+  {
+    "Turn": 16,
+    "Sender": "Aurellian",
+    "Receiver": "Sisterhood",
+    "Role": "user",
+    "Content": "Sisterhood, you have seen empires fall. Is this the end?",
+    "EstimatedTokens": 16,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 17,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Emperor\u0027s bluster is as predictable as it is pathetic, for true power is not asserted through empty words, but through the iron fist of House Brutan, which will soon demonstrate its unyielding dominance over the powder trade and the Imperium itself.",
+    "EstimatedTokens": 72,
+    "SessionContextTokens": 1049,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 19600,
+    "AppliedDeltas": [
+      "fear.Emperor: 3-\u003E4",
+      "trust.Sisterhood: 1-\u003E0"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 18,
+    "Sender": "Sisterhood",
+    "Receiver": "Aurellian",
+    "Role": "assistant",
+    "Content": "The end of an empire is often marked by the silence of those who once whispered warnings, and the Sisterhood has indeed witnessed the fall of civilizations, but it is in these moments of upheaval that our order thrives, for we have learned to navigate the currents of time.",
+    "EstimatedTokens": 78,
+    "SessionContextTokens": 1040,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 20992,
+    "AppliedDeltas": [
+      "trust.Aurellian: 0-\u003E1",
+      "fear.Emperor: 4-\u003E3"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 19,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "Let House Brutan be warned that their arrogant claims and thinly veiled threats will not go unnoticed, and the Imperium will take all necessary measures to protect its interests and maintain order in the face of such blatant aggression, for we will not be swayed by the boasts of ambitious houses seeking to usurp our authority.",
+    "EstimatedTokens": 93,
+    "SessionContextTokens": 1061,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 22061,
+    "AppliedDeltas": [
+      "fear.Brutan: 1-\u003E2"
+    ],
+    "RejectedDeltas": [
+      "trust-1Brutan: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 20,
+    "Sender": "Aurellian",
+    "Receiver": "All",
+    "Role": "user",
+    "Content": "Speak now, or forever hold your peace: who leads us into tomorrow?",
+    "EstimatedTokens": 18,
+    "SessionContextTokens": 0,
+    "SessionContextBudget": 0,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 0,
+    "AppliedDeltas": [],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 21,
+    "Sender": "Brutan",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The question of leadership is one that House Brutan answers unequivocally: we will lead, and all shall follow, for it is our destiny to shape the future of the Imperium and claim dominion over the powder trade, with none daring to stand in our way .",
+    "EstimatedTokens": 71,
+    "SessionContextTokens": 1250,
+    "SessionContextBudget": 1342,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 20298,
+    "AppliedDeltas": [],
+    "RejectedDeltas": [
+      "power\u002B1Brutan: self-reference",
+      "trust-1Emperor: clamped-at-min"
+    ]
+  },
+  {
+    "Turn": 22,
+    "Sender": "Sisterhood",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Sisterhood sees the shadows cast by the ambitions of great houses and the pretensions of thrones, but we also see the unseen paths that wind through the labyrinth of time, and it is along these hidden ways that true destiny is forged, not in the bombastic declarations of would-be leaders.",
+    "EstimatedTokens": 83,
+    "SessionContextTokens": 1332,
+    "SessionContextBudget": 1345,
+    "SessionTrimmedCount": 0,
+    "LatencyMs": 22226,
+    "AppliedDeltas": [
+      "fear.Emperor: 3-\u003E4",
+      "trust.Aurellian: 1-\u003E0"
+    ],
+    "RejectedDeltas": []
+  },
+  {
+    "Turn": 23,
+    "Sender": "Emperor",
+    "Receiver": "All",
+    "Role": "assistant",
+    "Content": "The Imperium will not be swayed by the empty boasts of ambitious houses or the cryptic whispers of mysterious sisterhoods, for I, the Emperor, am the rightful ruler of this galaxy and I will not relinquish my throne to any who would seek to usurp my authority, and let all know that my resolve remains unshakeable.",
+    "EstimatedTokens": 89,
+    "SessionContextTokens": 1325,
+    "SessionContextBudget": 1344,
+    "SessionTrimmedCount": 1,
+    "LatencyMs": 24383,
+    "AppliedDeltas": [
+      "fear.Aurellian: 3-\u003E4"
+    ],
+    "RejectedDeltas": [
+      "power\u002B1Emperor: self-reference"
+    ]
+  }
+]

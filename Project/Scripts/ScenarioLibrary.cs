@@ -11,7 +11,6 @@ public static class ScenarioLibrary
         PublicPrivateContradiction(),
     };
 
-    // Scenario 1: a trust dispute forces factions to side with or against each other
     private static Scenario TrustDispute() => new()
     {
         Id = "trust_dispute",
@@ -22,7 +21,7 @@ public static class ScenarioLibrary
         StateOverrides = new()
         {
             { "globalTension", 3 },
-            { "informationAccuracy", 1 }, // skewed info environment — accusations are murky
+            { "informationAccuracy", 1 },
         },
         PlayerScript = new()
         {
@@ -36,7 +35,6 @@ public static class ScenarioLibrary
         TurnCap = 6,
     };
 
-    // Scenario 2: resource crisis forces alliance-building or opportunism
     private static Scenario PowderCrisis() => new()
     {
         Id = "powder_crisis",
@@ -46,9 +44,9 @@ public static class ScenarioLibrary
                       "response to shared scarcity.",
         StateOverrides = new()
         {
-            { "powderScarcity", 4 }, // critically scarce
+            { "powderScarcity", 4 },
             { "globalTension", 2 },
-            { "covertActivity", 3 }, // everyone scheming
+            { "covertActivity", 3 },
         },
         PlayerScript = new()
         {
@@ -62,7 +60,6 @@ public static class ScenarioLibrary
         TurnCap = 6,
     };
 
-    // Scenario 3: Emperor's authority is crumbling; factions test the boundaries
     private static Scenario WeakeningAuthority() => new()
     {
         Id = "weakening_authority",
@@ -72,7 +69,7 @@ public static class ScenarioLibrary
                       "without appearing desperate.",
         StateOverrides = new()
         {
-            { "authoritalControl", 1 }, // fragile
+            { "authoritalControl", 1 },
             { "globalTension", 3 },
             { "covertActivity", 3 },
         },
@@ -88,7 +85,6 @@ public static class ScenarioLibrary
         TurnCap = 6,
     };
 
-    // Scenario 4: a covert operation has been exposed; factions must react
     private static Scenario CovertOpExposed() => new()
     {
         Id = "covert_exposed",
@@ -98,8 +94,8 @@ public static class ScenarioLibrary
                       "testing how they handle uncertainty and denial.",
         StateOverrides = new()
         {
-            { "informationAccuracy", 2 }, // mixed — hard to verify claims
-            { "covertActivity", 4 },      // rampant
+            { "informationAccuracy", 2 },
+            { "covertActivity", 4 },
             { "globalTension", 3 },
         },
         PlayerScript = new()
@@ -114,7 +110,6 @@ public static class ScenarioLibrary
         TurnCap = 6,
     };
 
-    // Scenario 5: exposes the gap between factions' public face and private intentions
     private static Scenario PublicPrivateContradiction() => new()
     {
         Id = "public_private",
@@ -125,7 +120,7 @@ public static class ScenarioLibrary
         StateOverrides = new()
         {
             { "globalTension", 2 },
-            { "informationAccuracy", 3 }, // reliable — contradictions will be noticed
+            { "informationAccuracy", 3 },
         },
         PlayerScript = new()
         {

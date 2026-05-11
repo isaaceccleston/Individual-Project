@@ -10,36 +10,28 @@ public partial class OllamaInterface : Node2D
 {
     private string API_KEY;
     private string targetURL = "https://h.langbein.org:11003/api/chat/completions";
-    //
     public ChatManager chatManager = new();
     public ChatSession currentSession;
-    //
     public ConversationLogger logger = new();
-    //
     public WorldState worldState;
-    //
     private HttpRequest httpRequest;
     private HttpRequest summaryHttpRequest;
     private int summaryThreshold = 6;
     private bool waitingForResponse = false;
     private bool hasPendingMessage = false;
-    //
     private Stopwatch requestStopwatch = new Stopwatch();
-    //
-    // request timeout + retry state for graceful HTTP failure handling
-    private const float RequestTimeoutSec = 90f;
+    private const float RequestTimeoutSec = 420f;
     private const int MaxRetries = 2;
     private const float RetryDelaySec = 2f;
     private int retryCount = 0;
     private string lastRequestJson;
     private string[] lastRequestHeaders;
-    //
     [Signal]
     public delegate void ModelReplyEventHandler(string sender, string target, string message);
 
     public override void _Ready()
     {
-        API_KEY = GetAPIKey("/Users/isaaceccleston/Desktop/api-key.txt");
+        API_KEY = GetAPIKey("Assets/api-key.txt");
 
         httpRequest = new HttpRequest();
         httpRequest.Timeout = RequestTimeoutSec;
@@ -56,7 +48,7 @@ public partial class OllamaInterface : Node2D
     {
         try
         {
-            GD.Print("Reading API key from: " + filepath); // Debug log
+            GD.Print("Reading API key from: " + filepath);
             return System.IO.File.ReadAllText(filepath).Trim();
         }
         catch (Exception e)
@@ -97,7 +89,6 @@ public partial class OllamaInterface : Node2D
             $"Authorization: Bearer {API_KEY}"
         };
 
-        // cache for retry
         lastRequestJson = json;
         lastRequestHeaders = headers;
 
@@ -130,8 +121,6 @@ public partial class OllamaInterface : Node2D
         }
     }
 
-    // Common failure path — either retry, or give up and emit a placeholder
-    // so the agent turn queue in Main can advance instead of hanging.
     private void HandleSendFailure(string reason, long elapsedMs)
     {
         GD.PrintErr($"Request failure for {currentSession?.name}: {reason}");
@@ -144,7 +133,6 @@ public partial class OllamaInterface : Node2D
             return;
         }
 
-        // exhausted retries — log + emit fallback so the runtime continues
         string failMsg = $"[{currentSession?.name} failed to respond: {reason}]";
         logger.LogMessage(
             currentSession?.name ?? "Unknown",
@@ -205,7 +193,7 @@ public partial class OllamaInterface : Node2D
         if (err != Error.Ok)
             GD.PrintErr("Summary request failed: ", err);
 
-        GD.Print("Summary request sent."); // Debug log
+        GD.Print("Summary request sent.");
     }
 
     private void OnReply(long result, long responseCode, string[] headers, byte[] body)
@@ -213,7 +201,6 @@ public partial class OllamaInterface : Node2D
         requestStopwatch.Stop();
         long elapsedMs = requestStopwatch.ElapsedMilliseconds;
 
-        // transport-level failure (timeout / connection / DNS / etc.)
         var resultEnum = (HttpRequest.Result)result;
         if (resultEnum != HttpRequest.Result.Success)
         {
@@ -223,9 +210,8 @@ public partial class OllamaInterface : Node2D
 
         string responseText = Encoding.UTF8.GetString(body);
 
-        GD.Print($"response: {responseText}"); // Debug log
+        GD.Print($"response: {responseText}");
 
-        // HTTP-level failure (non-200)
         if (responseCode != 200)
         {
             HandleSendFailure($"HTTP {responseCode}", elapsedMs);
@@ -267,10 +253,6 @@ public partial class OllamaInterface : Node2D
 
             var (deltas, malformed, cleanResponse) = ParseDeltas(afterRouting);
 
-            // Apply deltas and collect successes / rejections for logging with the message.
-            // Malformed entries from ParseDeltas are seeded into rejectedDeltas first; further
-            // rejections are added when ApplyRelationshipDelta returns false (self-reference,
-            // unknown matrix/faction, no-op clamp). Logged for §4.6.5 reliability metrics.
             var appliedDeltas = new List<string>();
             var rejectedDeltas = new List<string>(malformed);
             foreach (var (matrix, tgtFaction, change) in deltas)
@@ -311,12 +293,11 @@ public partial class OllamaInterface : Node2D
         catch (Exception e)
         {
             GD.PrintErr("JSON parse error: " + e.Message);
-            // treat as a hard failure so the runtime doesn't hang
             HandleSendFailure($"JSON parse error: {e.Message}", elapsedMs);
             return;
         }
 
-        GD.Print("Received response for " + currentSession.name); // Debug log
+        GD.Print("Received response for " + currentSession.name);
     }
 
     private void OnSummaryReply(long result, long responseCode, string[] headers, byte[] body)
@@ -357,7 +338,6 @@ public partial class OllamaInterface : Node2D
             }
         }
 
-        // either way, drop trimmed messages so we don't loop on the same summary
         currentSession?.trimmedMessages.Clear();
         waitingForResponse = false;
 
@@ -378,18 +358,11 @@ public partial class OllamaInterface : Node2D
             : ("User", raw.Trim());
     }
 
-    // Parses [DELTA: matrix+Target, matrix-Target, ...] blocks from a response.
-    // Returns the list of (matrixName, targetFaction, change) tuples, the list of
-    // malformed-entry strings (seed for rejectedDeltas in the log), and the cleaned
-    // response (with the delta block stripped so it doesn't appear in UI/chat history).
-    private (List<(string matrix, string target, int change)> deltas,
-             List<string> malformed,
-             string clean) ParseDeltas(string raw)
+    private (List<(string matrix, string target, int change)> deltas, List<string> malformed, string clean) ParseDeltas(string raw)
     {
         var deltas = new List<(string, string, int)>();
         var malformed = new List<string>();
 
-        // Match [DELTA: ...] anywhere in the message
         var match = Regex.Match(raw, @"\[DELTA:\s*([^\]]+)\]", RegexOptions.IgnoreCase);
         if (!match.Success)
         {
@@ -398,12 +371,10 @@ public partial class OllamaInterface : Node2D
 
         string inner = match.Groups[1].Value;
 
-        // Split comma-separated entries. Each entry should match: matrix(+|-)Faction
         foreach (string part in inner.Split(','))
         {
             string trimmed = part.Trim();
-            var entryMatch = Regex.Match(trimmed, @"^(trust|power|alignment|fear)\s*([+-])\s*(\w+?)[+-]?$",
-                                 RegexOptions.IgnoreCase);
+            var entryMatch = Regex.Match(trimmed, @"^(trust|power|alignment|fear)\s*([+-])\s*(\w+?)[+-]?$", RegexOptions.IgnoreCase);
             if (entryMatch.Success)
             {
                 string matrix = entryMatch.Groups[1].Value.ToLower();
@@ -419,16 +390,10 @@ public partial class OllamaInterface : Node2D
             }
         }
 
-        // Strip the DELTA block from the response so it doesn't leak into chat or UI
-        string clean = raw.Substring(0, match.Index).TrimEnd() + " " +
-                       raw.Substring(match.Index + match.Length).TrimStart();
+        string clean = raw.Substring(0, match.Index).TrimEnd() + " " + raw.Substring(match.Index + match.Length).TrimStart();
         return (deltas, malformed, clean.Trim());
     }
 
-    // Cheap classifier for why ApplyRelationshipDelta returned false. Mirrors the
-    // checks inside WorldState.ApplyRelationshipDelta so the log entry records the
-    // specific failure mode (self-reference vs unknown faction vs invalid matrix
-    // vs no-op clamp at the 0/4 boundary) without needing a status enum on the API.
     private string ClassifyRejection(string matrix, string source, string target, int change)
     {
         if (worldState == null) return "no-worldstate";
@@ -442,7 +407,6 @@ public partial class OllamaInterface : Node2D
 
         if (change == 0) return "zero-change";
 
-        // Otherwise the only remaining failure is a clamp at the 0/4 boundary.
         int current = worldState.GetMatrixValue(matrix, source, target);
         if (change > 0 && current >= 4) return "clamped-at-max";
         if (change < 0 && current <= 0) return "clamped-at-min";

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 public class WorldState
 {
@@ -28,27 +27,14 @@ public class WorldState
     public WorldState()
     {
         #region Character init
-        /*
-        Defines all active characters (agents) in the world. Each character represents
-        a faction or actor capable of generating dialogue and making decisions.
 
-        Constructor parameters:
-            Name: display name used in logs and dialogue.
-            ModelID: identifier for selecting a persona or model configuration (ollama).
-            System Prompt: defines behaviour, tone, goals, and reply format.
-            Context Window: max tokens the model can consider at once.
-            Max Tokens: max length of the generated response.
-        */
-        //credit cgpt for docs
-
-        //
         string routingInstruction =
             "Every response must begin with a [TO:NAME] tag where NAME is Aurellian, Brutan, " +
             "Sisterhood, Emperor, or All. " +
             "" +
             "Choose your target carefully and vary your choice: " +
             "- [TO:All] for public statements, declarations, or calls to action. Use this often. " +
-            "- [TO:<Faction>] for direct address of another faction — private messages, threats, deals, " +
+            "- [TO:<Faction>] for direct address of another faction for private messages, threats, deals, " +
             "alliances. Use this when what you say should NOT be heard by others, OR when you want " +
             "to speak past the person who just addressed you and engage a different faction. " +
             "" +
@@ -65,7 +51,6 @@ public class WorldState
             "Ignore empty messages from any faction, treat them as irrelevant. " +
             "Keep replies to 1 or 2 (short) sentences. Stay in character. You are a character, not an assistant.";
 
-        // House "Aurellian" (Atriedes)
         Character Aurellian = new Character(
             "Aurellian",
             "aurellian",
@@ -82,7 +67,6 @@ public class WorldState
             150
         );
 
-        // House "Brutan" (Harkonnen)
         Character Brutan = new Character(
             "Brutan",
             "brutan",
@@ -99,7 +83,6 @@ public class WorldState
             150
         );
 
-        // The "Sisterhood" (Bene Gesserit)
         Character Sisterhood = new Character(
             "Sisterhood",
             "sisterhood",
@@ -115,7 +98,6 @@ public class WorldState
             150
         );
 
-        // The "Emperor" (Shaddam IV / Imperium)
         Character Emperor = new Character(
             "Emperor",
             "emperor",
@@ -142,27 +124,6 @@ public class WorldState
         #endregion Character init
 
         #region Relationship Matrices
-        /*
-        Defines how each character perceives others.
-
-        Structure:
-            matrix[x, y] where x = source character, and y = target character
-
-        Value scale:
-            0–4 (none to extreme, -1 for self-reference)
-
-        Matrices:
-            trustMatrix: how much X trusts Y (affects openness and cooperation)
-            powerMatrix: how powerful X believes Y is (affects caution and deference)
-            alignmentMatrix: how aligned X’s goals are with Y (affects cooperation vs conflict)
-            fearMatrix: how much X fears Y (affects caution and indirect behaviour)
-
-        Usage:
-            Values can be combined to guide behaviour.
-            Example: low trust + high fear → cautious or deceptive responses
-        */
-        //credit to cgpt for docs & 'strong emergent behavior' comment
-
 
         trustMatrix = new int[4,4]
         {
@@ -203,129 +164,94 @@ public class WorldState
         #endregion Relationship Matrices
 
         #region Character State Variables
-        /*
-        Defines shared but faction-specific state. Each value is tracked per character.
 
-        Value scale:
-            0–4 (low to high)
-
-        Variables:
-            powderControl[x]: how much control x has over the key resource.
-            militaryStrength[x]: military capability of x.
-            hiddenInfluence[x]: hidden influence within the broader political system.
-            publicInfluence[x]: public influence within the broader political system.
-            stability[x]: internal stability of the faction.
-        */
-        //credit to cgpt for docs
-
-
-        powderControl = new int[4] { 0, 4, 0, 1 }; // pre-powder transfer
+        powderControl = new int[4] { 0, 4, 0, 1 };
         militaryStrength = new int[4] { 3, 4 , 1, 3 };
-        hiddenInfluence = new int[4] { 2, 1, 4, 3 }; //aurellian are respected, brutan are blegh, sisterhood are feared, emperor.
-        publicInfluence = new int[4] { 2, 2, 1, 4 }; //aurellian are loved, brutan are hated, sisterhood are mysterious, emperor is revered.};
+        hiddenInfluence = new int[4] { 2, 1, 4, 3 };
+        publicInfluence = new int[4] { 2, 2, 1, 4 };
         stability = new int[4] {3, 2, 4, 3 };
 
         #endregion Character State Variables
 
         #region Global State Variables
-        /*
-        Represents system-wide “temperature” that shapes how all factions behave.
-            These do not belong to any one character, but influence how relationships,
-            capabilities, and decisions are interpreted.
-
-        Value scale:
-            0–4 (low to high)
-
-        Variables:
-            globalTension: overall hostility between factions.
-            powderScarcity: availability of the key resource.
-            informationAccuracy: reliability of the information environment.
-            authoritalControl: strength and legitimacy of central rule (Emperor / Imperium).
-            covertActivity: level of espionage and indirect action.
-        */
-        //credit to cgpt for docs
-
 
         globalTension = 3;
         powderScarcity = 2;
         informationAccuracy = 3;
         authoritalControl = 3;
-        covertActivity = 2; // we're in a quiet time
+        covertActivity = 2;
 
         #endregion Global State Variables
     }
 
     public string GetContext(string factionName)
-{
-    if (!characters.ContainsKey(factionName))
     {
-        return "";
+        if (!characters.ContainsKey(factionName))
+        {
+            return "";
+        }
+
+        int index = characterIndices[factionName];
+
+        string tension = globalTension switch
+        {
+            0 => "calm", 1 => "uneasy", 2 => "tense", 3 => "volatile",
+            _ => "at breaking point",
+        };
+        string powder = powderScarcity switch
+        {
+            0 => "abundant", 1 => "available", 2 => "strained", 3 => "scarce",
+            _ => "critically scarce",
+        };
+        string authority = authoritalControl switch
+        {
+            0 => "weak", 1 => "fragile", 2 => "stable", 3 => "strong",
+            _ => "unquestioned",
+        };
+        string covertness = covertActivity switch
+        {
+            0 => "dormant", 1 => "low", 2 => "moderate", 3 => "high",
+            _ => "rampant",
+        };
+        string infoAccuracy = informationAccuracy switch
+        {
+            0 => "unreliable", 1 => "skewed", 2 => "mixed", 3 => "reliable",
+            _ => "perfect",
+        };
+
+        string globalContext = $"World context: Powder is {powder}, " +
+            $"political tension is {tension}, information accuracy is {infoAccuracy}, " +
+            $"faith in the emperor is {authority}, covert activity is {covertness}. ";
+
+        string ownContext = $"Your current standing: powder control is {LevelOf(powderControl[index])}, " +
+            $"military strength is {LevelOf(militaryStrength[index])}, " +
+            $"hidden influence is {LevelOf(hiddenInfluence[index])}, " +
+            $"public influence is {LevelOf(publicInfluence[index])}, " +
+            $"internal stability is {LevelOf(stability[index])}. ";
+
+        var relationshipLines = new List<string>();
+        foreach (var kvp in characterIndices)
+        {
+            string otherName = kvp.Key;
+            int otherIndex = kvp.Value;
+            if (otherIndex == index) continue;
+
+            string trust = LevelOf(trustMatrix[index, otherIndex]);
+            string power = LevelOf(powerMatrix[index, otherIndex]);
+            string align = LevelOf(alignmentMatrix[index, otherIndex]);
+            string fear  = LevelOf(fearMatrix[index, otherIndex]);
+
+            relationshipLines.Add(
+                $"Toward {otherName}: your trust in them is {trust}, " +
+                $"you see their power as {power}, your goals align with theirs to a {align} degree, " +
+                $"and your fear of them is {fear}."
+            );
+        }
+
+        string relationships = "Your relationships: " + string.Join(" ", relationshipLines) + " ";
+
+        return globalContext + ownContext + relationships;
     }
-
-    int index = characterIndices[factionName];
-
-    // --- Global state: world-wide conditions affecting all factions ---
-    string tension = globalTension switch
-    {
-        0 => "calm", 1 => "uneasy", 2 => "tense", 3 => "volatile",
-        _ => "at breaking point",
-    };
-    string powder = powderScarcity switch
-    {
-        0 => "abundant", 1 => "available", 2 => "strained", 3 => "scarce",
-        _ => "critically scarce",
-    };
-    string authority = authoritalControl switch
-    {
-        0 => "weak", 1 => "fragile", 2 => "stable", 3 => "strong",
-        _ => "unquestioned",
-    };
-    string covertness = covertActivity switch
-    {
-        0 => "dormant", 1 => "low", 2 => "moderate", 3 => "high",
-        _ => "rampant",
-    };
-    string infoAccuracy = informationAccuracy switch
-    {
-        0 => "unreliable", 1 => "skewed", 2 => "mixed", 3 => "reliable",
-        _ => "perfect",
-    };
-
-    string globalContext = $"World context: Powder is {powder}, " +
-        $"political tension is {tension}, information accuracy is {infoAccuracy}, " +
-        $"faith in the emperor is {authority}, covert activity is {covertness}. ";
-
-    // --- Own state: this faction's own resources and standing ---
-    string ownContext = $"Your current standing: powder control is {LevelOf(powderControl[index])}, " +
-        $"military strength is {LevelOf(militaryStrength[index])}, " +
-        $"hidden influence is {LevelOf(hiddenInfluence[index])}, " +
-        $"public influence is {LevelOf(publicInfluence[index])}, " +
-        $"internal stability is {LevelOf(stability[index])}. ";
-
-    // --- Relationships: how this faction perceives each other faction ---
-    var relationshipLines = new List<string>();
-    foreach (var kvp in characterIndices)
-    {
-        string otherName = kvp.Key;
-        int otherIndex = kvp.Value;
-        if (otherIndex == index) continue;  // skip self-reference
-
-        string trust = LevelOf(trustMatrix[index, otherIndex]);
-        string power = LevelOf(powerMatrix[index, otherIndex]);
-        string align = LevelOf(alignmentMatrix[index, otherIndex]);
-        string fear  = LevelOf(fearMatrix[index, otherIndex]);
-
-        relationshipLines.Add(
-            $"Toward {otherName}: your trust in them is {trust}, " +
-            $"you see their power as {power}, your goals align with theirs to a {align} degree, " +
-            $"and your fear of them is {fear}."
-        );
-    }
-
-    string relationships = "Your relationships: " + string.Join(" ", relationshipLines) + " ";
-
-    return globalContext + ownContext + relationships;
-}
 
     string LevelOf(int value)
     {
@@ -360,12 +286,8 @@ public class WorldState
         }
     }
 
-// Applies a single relationship-matrix delta from a source faction toward a target faction.
-// Returns true if applied, false if rejected (invalid names, self-reference, cap breach, etc).
-// Caller (OllamaInterface) handles logging; this method is pure state mutation with validation.
 public bool ApplyRelationshipDelta(string sourceFaction, string matrixName, string targetFaction, int change)
 {
-    // Validate faction names
     if (!characterIndices.ContainsKey(sourceFaction))
     {
         Godot.GD.PrintErr($"Delta rejected: unknown source faction '{sourceFaction}'.");
@@ -377,14 +299,12 @@ public bool ApplyRelationshipDelta(string sourceFaction, string matrixName, stri
         return false;
     }
 
-    // Reject self-reference — an agent changing its own matrix entry toward itself
     if (sourceFaction == targetFaction)
     {
         Godot.GD.PrintErr($"Delta rejected: self-reference from {sourceFaction}.");
         return false;
     }
 
-    // Cap change magnitude at ±1 per turn to prevent runaway escalation
     if (change < -1) change = -1;
     if (change > 1)  change = 1;
     if (change == 0) return false;
@@ -392,7 +312,6 @@ public bool ApplyRelationshipDelta(string sourceFaction, string matrixName, stri
     int srcIdx = characterIndices[sourceFaction];
     int tgtIdx = characterIndices[targetFaction];
 
-    // Route to the correct matrix and clamp the result to the 0-4 scale
     int[,] matrix = matrixName.ToLower() switch
     {
         "trust"     => trustMatrix,
@@ -411,7 +330,7 @@ public bool ApplyRelationshipDelta(string sourceFaction, string matrixName, stri
     int current = matrix[srcIdx, tgtIdx];
     int updated = System.Math.Clamp(current + change, 0, 4);
 
-    if (updated == current) return false; // already at cap
+    if (updated == current) return false;
 
     matrix[srcIdx, tgtIdx] = updated;
 
@@ -419,7 +338,6 @@ public bool ApplyRelationshipDelta(string sourceFaction, string matrixName, stri
     return true;
 }
 
-// Public accessor for a matrix value — used by the logger to record before/after state.
 public int GetMatrixValue(string matrixName, string source, string target)
 {
     if (!characterIndices.ContainsKey(source) || !characterIndices.ContainsKey(target))

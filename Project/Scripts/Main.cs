@@ -1,57 +1,47 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks.Dataflow;
 using Godot;
 
 public partial class Main : Node2D
 {
-    //
     OllamaInterface ollamaInterface;
     UI ui;
     StartUI startUI;
     WorldState worldState = new WorldState();
-    //
     string playerFaction = "";
     string sender = "User";
     private Queue<string> agentTurnQueue = new();
     private bool isPlayerTurn = true;
-    // eval stuff
     private Scenario currentScenario;
     private int scenarioTurnCount = 0;
     private bool isAutomatedRun = false;
-    private string currentMode = "LLM";     // "LLM", "Scripted", or "Baseline"
+    private string currentMode = "LLM";
     private int currentRunIndex = 0;
-    private bool isBaselineMode = false;    // overridden per-scenario by F-key
-    //
-    // last inbound message — baseline agents need this to decide reply target
+    private bool isBaselineMode = false;
     private string lastInboundSender = "";
     private string lastInboundTarget = "All";
 
     public override void _Ready()
     {
-        //
         SetProcessInput(true);
-        //
+        
         startUI = GetNode<StartUI>("StartUI");
         ui = GetNode<UI>("UI");
         ui.Visible = false;
 
         startUI.StartGameSignal += OnStartGame;
 
-        //
         ui.MessageSubmitted += OnUserMessage;
         ui.ExportLogRequested += ExportLog;
         ui.SummariseRequested += RequestSummary;
 
-        // Initialize the Ollama interface and chat manager
         ollamaInterface = GetNode<OllamaInterface>("OllamaInterface");
         ollamaInterface.worldState = worldState;
 
         ollamaInterface.ModelReply += OnModelReply;
     }
 
-    // F1–F5 → LLM scenarios 1–5, F6–F10 → baseline (non-LLM) scenarios 1–5.
     public override void _Input(InputEvent @event)
     {
         if (@event is not InputEventKey keyEvent || !keyEvent.Pressed) return;
@@ -71,7 +61,6 @@ public partial class Main : Node2D
             return;
         }
 
-        // playerFaction must be set by having started the game normally first
         if (string.IsNullOrEmpty(playerFaction))
         {
             GD.PrintErr("Start the game first (pick a faction), then press F1-F10.");
@@ -101,27 +90,14 @@ public partial class Main : Node2D
             _ => throw new ArgumentException("Invalid faction index")
         };
 
-        // ui stuff
         List<string> recieverOptions = worldState.characters.Keys.ToList();
         recieverOptions.Remove(playerFaction);
         ui.SetCharacterLabels(recieverOptions.ToArray());
         ui.SetPlayerFaction(playerFaction);
 
-        //
         string firstReceiver = recieverOptions[0];
         ollamaInterface.currentSession = ollamaInterface.chatManager.GetOrCreateSession(worldState.characters[firstReceiver]);
         sender = playerFaction;
-
-        //
-
-        // if (!mode)
-        // {
-        //     return;
-        // }
-        // else
-        // {
-        //     return;
-        // }
     }
 
     public void RequestSummary()
@@ -134,7 +110,6 @@ public partial class Main : Node2D
         ollamaInterface.logger.Export("conversation_log.json");
     }
 
-    // Called from UI signal
     public void OnUserMessage(string message)
     {
         if (!isPlayerTurn)
@@ -158,7 +133,6 @@ public partial class Main : Node2D
         SendPlayerMessage(target, message);
     }
 
-    //used by both UI and scripted player.
     private void SendPlayerMessage(string target, string message)
     {
         isPlayerTurn = false;
@@ -213,11 +187,11 @@ public partial class Main : Node2D
 
             if(factionName == sender)
             {
-                continue; // Don't send the message to the sender's own model session
+                continue;
             }
             if(factionName == playerFaction)
             {
-                continue; // Don't send the message to the player's model session
+                continue;
             }
 
             bool hears = target == "All" || target == factionName;
@@ -231,7 +205,6 @@ public partial class Main : Node2D
         }
     }
 
-    //
     private void StartNextAgentTurn()
     {
         if (agentTurnQueue.Count == 0)
@@ -239,7 +212,6 @@ public partial class Main : Node2D
             isPlayerTurn = true;
             GD.Print("All agents have taken their turn. It's now the player's turn.");
 
-            // If we're in an automated run, fire the next scripted message after a short pause
             if (isAutomatedRun)
             {
                 var scenarioTimer = GetTree().CreateTimer(1.0f);
@@ -253,7 +225,6 @@ public partial class Main : Node2D
 
         if (isBaselineMode)
         {
-            // baseline path: deterministic, no HTTP, near-instant
             var t = GetTree().CreateTimer(0.2f);
             t.Timeout += () => RunBaselineAgentTurn(nextAgent);
         }
@@ -267,9 +238,6 @@ public partial class Main : Node2D
         }
     }
 
-    // Fire one templated baseline reply for the named agent.
-    // Logs and routes through OnModelReply so the rest of the pipeline (UI,
-    // BroadcastMessage, scenario advance) is identical to the LLM path.
     private void RunBaselineAgentTurn(string agentName)
     {
         var (target, content, appliedDeltas) = BaselineAgent.Respond(
@@ -281,13 +249,12 @@ public partial class Main : Node2D
             "assistant",
             content,
             (int)(content.Length / 3.5f),
-            0, // baseline has no real latency
+            0,
             appliedDeltas);
 
         OnModelReply(agentName, target, content);
     }
 
-    //
     public void StartScenario(Scenario scenario, string mode, int runIndex, bool baseline = false)
     {
         GD.Print($"STARTING SCENARIO: {scenario.Id} | mode={mode} | run={runIndex}");
@@ -299,11 +266,9 @@ public partial class Main : Node2D
         isAutomatedRun = true;
         isBaselineMode = baseline;
 
-        // Fresh sessions so no history leaks between runs
         ollamaInterface.chatManager = new ChatManager();
         ollamaInterface.logger = new ConversationLogger();
 
-        // Rebuild world state from scratch + apply scenario's overrides
         worldState = new WorldState();
         worldState.ApplyOverrides(scenario.StateOverrides);
         ollamaInterface.worldState = worldState;
@@ -312,7 +277,6 @@ public partial class Main : Node2D
         FireNextScriptedMessage();
     }
 
-    // Fire the next player script message, or end the scenario if exhausted.
     private void FireNextScriptedMessage()
     {
         if (scenarioTurnCount >= currentScenario.TurnCap ||
@@ -325,15 +289,12 @@ public partial class Main : Node2D
         PlayerMessage next = currentScenario.PlayerScript[scenarioTurnCount];
         scenarioTurnCount++;
 
-        // if the script targets the player's own faction, broadcast instead
-        // (scripts are written generically and may name any of the four)
         string target = (next.Target == playerFaction) ? "All" : next.Target;
 
         GD.Print($"[SCENARIO] Player turn {scenarioTurnCount}: [{target}] {next.Content}");
         SendPlayerMessage(target, next.Content);
     }
 
-    // Called when the player script is exhausted or the turn cap is hit.
     private void EndScenario()
     {
         GD.Print($"=== SCENARIO COMPLETE: {currentScenario.Id} ===");

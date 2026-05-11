@@ -2,29 +2,24 @@ using Godot;
 
 public partial class StartUI : Control
 {
-    public bool mode; // false = baseline, true = LLM
-    public int faction; // 0 = Aurellian, 1 = Brutan, 2 = Sisterhood, 3 = Emperor
-    //
+    public bool mode;
+    public int faction;
     private VBoxContainer mainVBox;
     private Button LLMButton;
     private Button baselineButton;
     private Button quitButton;
-    //
     private VBoxContainer factionVBox;
     private Button aurellianButton;
     private Button brutanButton;
     private Button sisterhoodButton;
     private Button emperorButton;
     private Button backButton;
-    //
     private string thisPath;
-    //
     [Signal]
     public delegate void StartGameSignalEventHandler(bool mode, int faction);
 
     public override void _Ready()
     {
-        //
         thisPath = this.GetPath();
 
         mainVBox = GetNode<VBoxContainer>(thisPath + "/MainVBox");
@@ -49,12 +44,10 @@ public partial class StartUI : Control
         emperorButton.Pressed += EmperorChosen;
         backButton.Pressed += BackToMain;
 
-        //
         mainVBox.Visible = true;
         factionVBox.Visible = false;
     }
 
-    //
     private void LLMModeSelected()
     {
         mode = true;
@@ -74,7 +67,6 @@ public partial class StartUI : Control
         GetTree().Quit();
     }
 
-    //
     private void AurellianChosen()
     {
         faction = 0;

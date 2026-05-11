@@ -7,8 +7,6 @@ public partial class Character : Node2D
     public string systemPrompt { get; set; }
     public int contextWindow { get; set; }
     public int maxTokens { get; set; }
-
-    /* Currently not in use, but more intuitive for initial class structure */
     public Character(string name, string modelID, string systemPrompt, int contextWindow, int maxTokens)
     {
         this.name = name;
