@@ -1,4 +1,4 @@
-Individual project focusing on LLM-integration in the context of game experiences.
+*Individual project focusing on LLM-integration in the context of game experiences.*
 
 Marked 79/100
 
